@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  privyId       String?    @unique
+  walletAddress String?
+  displayName   String?
+  /// Short public path: /pay/skate_xxxx — Stake-style personal deposit link
+  depositPath   String?    @unique
+  /// Unique Solana address for this user's USDC deposits
+  depositAddress String?   @unique
+  /// Base58 secret for deposit keypair (encrypt in production)
+  depositSecret  String?
+  clientSeed    String
+  serverSeed    String
+  serverSeedHash String
+  nonce         Int        @default(0)
+  /// First qualifying deposit already received the 100% match bonus
+  firstDepositBonusClaimed Boolean @default(false)
+  /// Who invited this user (depositPath / code at signup)
+  referredById  String?
+  referredBy    User?      @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals     User[]     @relation("UserReferrals")
+  referralRewardsGiven ReferralReward[] @relation("ReferrerRewards")
+  referralRewardEarned ReferralReward?  @relation("RefereeReward")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  balance       Balance?
+  bets          Bet[]
+  deposits      Deposit[]
+  withdrawals   Withdrawal[]
+  gameRounds    GameRound[]
+
+  @@index([referredById])
+}
+
+/// $5 referral credit — pending until unlockAt, then settled to available.
+model ReferralReward {
+  id          String    @id @default(cuid())
+  referrerId  String
+  referrer    User      @relation("ReferrerRewards", fields: [referrerId], references: [id], onDelete: Cascade)
+  refereeId   String    @unique
+  referee     User      @relation("RefereeReward", fields: [refereeId], references: [id], onDelete: Cascade)
+  amount      BigInt
+  /// pending | settled | void
+  status      String    @default("pending")
+  qualifiedAt DateTime  @default(now())
+  unlockAt    DateTime
+  settledAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([referrerId, status])
+  @@index([unlockAt, status])
+}
+
+/// Multi-step rounds (Mines). Layout stays secret until bust/cashout.
+model GameRound {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game           String
+  status         String   @default("OPEN")
+  amount         BigInt
+  /// Bonus micro used for this round stake (already deducted from bonus)
+  bonusUsed      BigInt   @default(0)
+  mines          Int
+  /// JSON number[] of mine tile indexes — server only until settle
+  mineTiles      String
+  /// JSON number[] of safely revealed tiles
+  revealed       String   @default("[]")
+  multiplier     Float    @default(1)
+  payout         BigInt   @default(0)
+  serverSeed     String
+  serverSeedHash String
+  clientSeed     String
+  nonce          Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId, status])
+}
+
+model Balance {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// USDC micro-units (6 decimals). 1 USDC = 1_000_000
+  available BigInt   @default(0)
+  locked    BigInt   @default(0)
+  /// Playable bonus (not withdrawable). First-deposit match credits here.
+  bonus     BigInt   @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model Deposit {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      BigInt
+  signature   String   @unique
+  status      String   @default("confirmed")
+  createdAt   DateTime @default(now())
+}
+
+model Withdrawal {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      BigInt
+  toAddress   String
+  signature   String?
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Bet {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game           String
+  amount         BigInt
+  payout         BigInt   @default(0)
+  profit         BigInt   @default(0)
+  won            Boolean
+  /// JSON string of game-specific inputs (target, side, etc.)
+  choice         String
+  result         String
+  serverSeed     String
+  serverSeedHash String
+  clientSeed     String
+  nonce          Int
+  createdAt      DateTime @default(now())
+
+  @@index([userId, createdAt])
+}

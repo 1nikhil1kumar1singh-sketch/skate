@@ -1,0 +1,43 @@
+{
+  "name": "skate",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "postinstall": "prisma generate",
+    "db": "prisma db push",
+    "setup:treasury": "node scripts/setup-treasury.mjs",
+    "audit:ev": "node scripts/audit-house-ev.mjs",
+    "audit:play": "node scripts/playtest-house.mjs",
+    "wallet:status": "curl -s http://localhost:3000/api/wallet/status | python3 -m json.tool"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "@privy-io/react-auth": "^2.24.0",
+    "@privy-io/server-auth": "^1.32.5",
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.4",
+    "bs58": "^6.0.0",
+    "framer-motion": "^12.23.12",
+    "jose": "^6.0.12",
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.2",
+    "prisma": "^6.14.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}
