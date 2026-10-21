@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate a Solana treasury keypair for Skate live deposits/withdrawals.
+ * Generate a Solana treasury keypair for Klasshi live deposits/withdrawals.
  * Usage: node scripts/setup-treasury.mjs
  * Writes/updates .env with TREASURY keys and turns DEMO_MODE off.
  */
@@ -62,7 +62,7 @@ fs.writeFileSync(
 );
 
 console.log(`
-Skate treasury ready (devnet)
+Klasshi treasury ready (devnet)
 
   Address: ${address}
   Wrote:   .env  +  .skate/treasury.json

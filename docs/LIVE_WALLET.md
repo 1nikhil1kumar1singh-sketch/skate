@@ -25,7 +25,7 @@ Disable USDT: set `NEXT_PUBLIC_USDT_MINT=""` and restart.
 
 ## Deposit (live)
 
-1. User opens `/wallet` → copies **personal deposit address** or `/pay/skate_…`
+1. User opens `/wallet` → copies **personal deposit address** or `/pay/kl_…`
 2. Sends **USDC or USDT** (matching cluster mint) to that address
 3. Clicks **Sync deposits + sweep**
 4. Balance credits; tokens move to platform treasury

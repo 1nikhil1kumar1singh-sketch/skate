@@ -31,7 +31,7 @@ export function SiteHeader() {
       <div className="site-header__row">
         <Link href="/" className="brand-mark">
           <span className="brand-mark__slash">/</span>
-          SKATE
+          KLASSHI
         </Link>
 
         <nav className="site-nav" aria-label="Primary">

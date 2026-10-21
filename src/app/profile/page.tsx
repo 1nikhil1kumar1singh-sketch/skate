@@ -238,7 +238,7 @@ export default function ProfilePage() {
             className="btn btn--primary"
             onClick={() => void loginDemo()}
           >
-            Enter Skate
+            Enter Klasshi
           </button>
           <Link href="/" className="btn btn--ghost">
             Browse lobby

@@ -3,7 +3,7 @@ import { toMicroUsdc, fromMicroUsdc, formatUsdc } from "./money";
 
 export const REFERRAL_REWARD_USD = 5;
 export const REFERRAL_UNLOCK_DAYS = 30;
-export const REFERRAL_STORAGE_KEY = "skate_ref";
+export const REFERRAL_STORAGE_KEY = "klasshi_ref";
 
 export const REFERRAL_REWARD_MICRO = toMicroUsdc(REFERRAL_REWARD_USD);
 

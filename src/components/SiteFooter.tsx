@@ -25,7 +25,7 @@ export function SiteFooter() {
           <div className="site-footer__about">
             <Link href="/" className="brand-mark site-footer__logo">
               <span className="brand-mark__slash">/</span>
-              SKATE
+              KLASSHI
             </Link>
             <p>Provably fair Solana originals. Deposit, play, withdraw.</p>
           </div>
@@ -78,7 +78,7 @@ export function SiteFooter() {
 
         <div className="site-footer__bar">
           <p>
-            © {year} Skate · 18+ · Outcomes are random and house-edged
+            © {year} Klasshi · klasshi.com · 18+ · Outcomes are random and house-edged
           </p>
         </div>
       </div>

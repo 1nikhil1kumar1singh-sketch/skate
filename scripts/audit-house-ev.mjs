@@ -1,5 +1,5 @@
 /**
- * Exact RTP / house-edge audit for Skate originals.
+ * Exact RTP / house-edge audit for Klasshi originals.
  * Target: every game EV ≤ 0.92 (default 8% edge), none > 1.0.
  * Run: node scripts/audit-house-ev.mjs
  */
@@ -109,7 +109,7 @@ const mystEv = (4500 * 0 + 3800 * 1 + 1500 * 2 + 200 * 3) / 10000;
 report("spin", spinEv);
 report("mystery", mystEv);
 
-console.log("\nSkate house EV audit (stake=1 → expected return)\n");
+console.log("\nKlasshi house EV audit (stake=1 → expected return)\n");
 console.log(
   "Game".padEnd(28),
   "EV".padStart(8),

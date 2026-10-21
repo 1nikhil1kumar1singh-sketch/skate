@@ -1,5 +1,5 @@
 export const config = {
-  appName: process.env.NEXT_PUBLIC_APP_NAME ?? "Skate",
+  appName: process.env.NEXT_PUBLIC_APP_NAME ?? "Klasshi",
   // Explicit DEMO_MODE=false wins (live wallet without Privy still works via demo JWT).
   demoMode: (() => {
     const demo = process.env.DEMO_MODE;

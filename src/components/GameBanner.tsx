@@ -21,7 +21,7 @@ export function GameBanner({ slug }: { slug: string }) {
         />
         <div className="game-banner__veil" />
         <div className="game-banner__copy">
-          <p className="game-kicker">Skate originals</p>
+          <p className="game-kicker">Klasshi originals</p>
           <h1>{game.title}</h1>
           <p>{game.blurb}</p>
         </div>

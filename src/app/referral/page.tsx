@@ -55,12 +55,12 @@ export default function ReferralPage() {
 
   const code = useMemo(() => {
     if (data?.code) return data.code;
-    if (!user) return "skate";
+    if (!user) return "klasshi";
     return (user.depositPath || user.id.slice(0, 8)).toLowerCase();
   }, [data?.code, user]);
 
   const link = useMemo(() => {
-    if (typeof window === "undefined") return `https://skate.app/?ref=${code}`;
+    if (typeof window === "undefined") return `https://klasshi.com/?ref=${code}`;
     return `${window.location.origin}/?ref=${encodeURIComponent(code)}`;
   }, [code]);
 
@@ -126,7 +126,7 @@ export default function ReferralPage() {
               disabled={loading}
               onClick={() => void loginDemo()}
             >
-              Enter Skate
+              Enter Klasshi
             </button>
           </div>
         ) : (

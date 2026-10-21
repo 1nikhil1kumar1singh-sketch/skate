@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { config } from "./config";
 
-const COOKIE = "skate_session";
+const COOKIE = "klasshi_session";
 
 function secretKey() {
   return new TextEncoder().encode(config.sessionSecret);

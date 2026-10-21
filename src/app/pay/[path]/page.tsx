@@ -47,7 +47,7 @@ export default function PayPathPage() {
     <main className="pay-page">
       <section className="pay-card">
         <p className="vault-kicker">Deposit link</p>
-        <h1>Send to Skate</h1>
+        <h1>Send to Klasshi</h1>
         {error ? <p className="error-text">{error}</p> : null}
         {!info && !error ? <p className="muted">Loading…</p> : null}
         {info ? (

@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     : null;
 
   const user = await createUser({
-    displayName: `Skater-${Math.floor(Math.random() * 9000 + 1000)}`,
+    displayName: `Player-${Math.floor(Math.random() * 9000 + 1000)}`,
     withDemoBalance: true,
     referredById: referredById ?? undefined,
   });

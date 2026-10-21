@@ -1,6 +1,6 @@
-# Skate
+# Klasshi
 
-Solana USDC gaming desk — Dice + Coin Flip, TypeScript, Privy-ready.
+Solana USDC casino — originals, TypeScript, Privy-optional.
 
 ## What you get
 

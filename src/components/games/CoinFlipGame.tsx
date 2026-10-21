@@ -62,7 +62,7 @@ export function CoinFlipGame() {
           transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
         >
           <span>
-            {flipping ? "…" : last ? last.side.toUpperCase() : "SKATE"}
+            {flipping ? "…" : last ? last.side.toUpperCase() : "KLASSHI"}
           </span>
         </motion.div>
         <p className="game-sub">

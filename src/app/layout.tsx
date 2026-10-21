@@ -19,9 +19,9 @@ const body = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Skate — Neon Solana USDC Casino",
+  title: "Klasshi — Solana USDC Casino",
   description:
-    "Dark crypto-casino originals on Solana USDC. Mines, limbo, crash, keno, and more.",
+    "Provably fair Solana originals. Mines, limbo, crash, keno, and more.",
 };
 
 export const viewport: Viewport = {

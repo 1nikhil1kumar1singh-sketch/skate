@@ -6,7 +6,7 @@ export function createDepositWallet() {
   const keypair = Keypair.generate();
   const depositAddress = keypair.publicKey.toBase58();
   const depositSecret = bs58.encode(keypair.secretKey);
-  const depositPath = `skate_${randomBytes(4).toString("hex")}`;
+  const depositPath = `kl_${randomBytes(4).toString("hex")}`;
   return { depositAddress, depositSecret, depositPath };
 }
 
@@ -17,5 +17,5 @@ export function depositKeypairFromSecret(secret: string): Keypair {
 /** Deterministic fallback path from user id (if regenerating display only). */
 export function pathFromUserId(userId: string) {
   const h = createHash("sha256").update(userId).digest("hex").slice(0, 8);
-  return `skate_${h}`;
+  return `kl_${h}`;
 }

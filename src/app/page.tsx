@@ -32,7 +32,7 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: [0.2, 0.8, 0.2, 1] }}
             >
-              SKATE<span>/</span>
+              KLASSHI<span>/</span>
             </motion.h1>
             <motion.p
               className="hero-line"
@@ -54,7 +54,7 @@ export default function HomePage() {
                 disabled={loading}
                 onClick={() => void loginDemo()}
               >
-                Enter Skate
+                Enter Klasshi
               </button>
               <Link href="/play/mines" className="btn">
                 Play Mines

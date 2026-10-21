@@ -91,7 +91,7 @@ export function SkateProvider({ children }: { children: ReactNode }) {
   const loginDemo = useCallback(async () => {
     let ref: string | undefined;
     try {
-      ref = localStorage.getItem("skate_ref") ?? undefined;
+      ref = localStorage.getItem("klasshi_ref") ?? undefined;
     } catch {
       /* ignore */
     }
@@ -105,7 +105,7 @@ export function SkateProvider({ children }: { children: ReactNode }) {
       throw new Error(err.error ?? "Demo login failed");
     }
     try {
-      localStorage.removeItem("skate_ref");
+      localStorage.removeItem("klasshi_ref");
     } catch {
       /* ignore */
     }
