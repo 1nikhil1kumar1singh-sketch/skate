@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileDock } from "@/components/MobileDock";
 import { OfferPopup } from "@/components/OfferPopup";
+import { SiteInsights } from "@/components/SiteInsights";
 import "./globals.css";
 
 const display = Orbitron({
@@ -48,6 +49,9 @@ export default function RootLayout({
           <MobileDock />
           <Suspense fallback={null}>
             <OfferPopup />
+          </Suspense>
+          <Suspense fallback={null}>
+            <SiteInsights />
           </Suspense>
         </Providers>
       </body>

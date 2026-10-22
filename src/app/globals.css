@@ -868,6 +868,155 @@ a.btn {
   font-weight: 600;
 }
 
+/* —— Support & admin —— */
+.support-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.15rem;
+  align-items: start;
+}
+
+.support-faq__list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.support-faq__item {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.22);
+  padding: 0 0.9rem;
+}
+
+.support-faq__item summary {
+  cursor: pointer;
+  padding: 0.85rem 0;
+  font-weight: 550;
+  list-style: none;
+}
+
+.support-faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.support-faq__item p {
+  margin: 0 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.support-links {
+  margin: 0.85rem 0 0;
+  font-size: 0.86rem;
+}
+
+.support-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+  padding: 0.85rem 0.95rem;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.support-success {
+  margin: 0;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(232, 241, 255, 0.9);
+}
+
+.admin-unlock {
+  max-width: 420px;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-stats strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.75rem;
+}
+
+.admin-paths {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.admin-paths li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.88rem;
+}
+
+.admin-tickets {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-ticket {
+  padding: 0.95rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  gap: 0.4rem;
+}
+
+.admin-ticket header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.admin-status {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.admin-status.is-open {
+  color: rgba(140, 210, 160, 0.95);
+}
+
+.admin-ticket__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 720px) {
+  .support-grid,
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
 .auth-panel {
   width: 100%;
   display: grid;

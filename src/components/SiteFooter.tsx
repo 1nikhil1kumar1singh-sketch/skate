@@ -70,6 +70,9 @@ export function SiteFooter() {
             <h3>Legal</h3>
             <ul>
               <li>
+                <Link href="/support">Support</Link>
+              </li>
+              <li>
                 <Link href="/terms">Terms &amp; Conditions</Link>
               </li>
               <li>

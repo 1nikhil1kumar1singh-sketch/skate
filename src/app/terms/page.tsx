@@ -133,7 +133,7 @@ const SECTIONS: { id: string; title: string; body: string[] }[] = [
     id: "contact",
     title: "15. Contact",
     body: [
-      "For questions about these Terms, contact support via the channels published on klasshi.com.",
+      "For questions about these Terms, contact support at klasshi.com/support.",
       "Operator: Klasshi · Website: https://klasshi.com",
     ],
   },
