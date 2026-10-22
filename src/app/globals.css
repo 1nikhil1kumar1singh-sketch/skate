@@ -3308,7 +3308,7 @@ a.btn {
   font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--neon);
+  color: var(--muted);
 }
 
 .legal-hero h1 {
@@ -3376,8 +3376,8 @@ a.btn {
 }
 
 .legal-toc a:hover {
-  border-bottom-color: rgba(0, 240, 255, 0.45);
-  color: var(--neon);
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+  color: var(--ink);
 }
 
 .legal-body {
@@ -3426,9 +3426,9 @@ a.btn {
 .legal-footer {
   margin-top: 0.5rem;
   padding: 1.15rem 1.1rem;
-  border: 1px solid rgba(0, 240, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  background: rgba(0, 240, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
   display: grid;
   gap: 0.9rem;
 }

@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import {
+  LegalDocument,
+  type LegalSection,
+} from "@/components/LegalDocument";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions — Klasshi",
-  description: "Terms of use for Klasshi, a Solana USDC gaming platform.",
+  description:
+    "Terms & Conditions for using Klasshi (klasshi.com), a Solana USDC gaming platform.",
+  alternates: { canonical: "https://klasshi.com/terms" },
 };
 
 const EFFECTIVE = "22 July 2026";
+const UPDATED = "22 October 2026";
 
-const SECTIONS: { id: string; title: string; body: string[] }[] = [
+const SECTIONS: LegalSection[] = [
   {
     id: "agreement",
     title: "1. Agreement to terms",
     body: [
-      "These Terms & Conditions (“Terms”) govern your access to and use of Klasshi (the “Platform”), including the website at klasshi.com, related apps, APIs, and any games, wallets, or services we operate.",
-      "By creating an account, connecting a wallet, depositing funds, or placing a wager, you agree to these Terms. If you do not agree, do not use the Platform.",
+      "These Terms & Conditions (“Terms”) govern your access to and use of Klasshi (the “Platform”), including the website at https://klasshi.com, related apps, APIs, games, wallets, offers, and support channels we operate.",
+      "By creating an account, signing in (including with Google), connecting a wallet, depositing funds, placing a wager, or otherwise using the Platform, you agree to these Terms and our Privacy Policy at https://klasshi.com/privacy. If you do not agree, do not use the Platform.",
     ],
   },
   {
@@ -32,17 +38,18 @@ const SECTIONS: { id: string; title: string; body: string[] }[] = [
     body: [
       "You must provide accurate registration details and keep login credentials confidential. You are responsible for all activity under your account.",
       "One natural person may maintain only one account unless we expressly approve otherwise. Multi-accounting, shared accounts, and bot-assisted play may be voided.",
-      "Notify us promptly of any unauthorized access. We are not liable for losses arising from compromised credentials where you failed to take reasonable care.",
+      "Guest or temporary sessions may have limited features. Creating a full account (email or Google) is required to secure balances and withdrawals tied to your identity.",
+      "Notify us promptly via Support of any unauthorized access. We are not liable for losses arising from compromised credentials where you failed to take reasonable care.",
     ],
   },
   {
     id: "funds",
     title: "4. Deposits, balances & withdrawals",
     body: [
-      "Klasshi maintains a custodial ledger balance denominated in USD-stable assets (e.g. USDC / USDT on Solana). Deposits credit after network confirmation and our verification.",
+      "Klasshi maintains a custodial ledger balance denominated in USD-stable assets (for example USDC / USDT on Solana). Deposits credit after network confirmation and our verification.",
       "You are responsible for sending supported assets to the correct deposit address on the correct network. Unsupported tokens, wrong networks, or mistyped addresses may result in irreversible loss.",
       "Withdrawals are subject to fees, limits, security checks, and available liquidity. We may delay or refuse withdrawals where we reasonably suspect fraud, abuse, sanction risk, or technical failure.",
-      "Bonus, referral, and promotional balances may be non-withdrawable or subject to wagering and unlock rules disclosed at the time of the offer.",
+      "Bonus, referral, and promotional balances may be non-withdrawable or subject to wagering and unlock rules disclosed with the offer.",
     ],
   },
   {
@@ -77,7 +84,7 @@ const SECTIONS: { id: string; title: string; body: string[] }[] = [
     title: "8. Blockchain & technology risk",
     body: [
       "Cryptocurrency and smart-contract systems involve risk, including volatility, network congestion, forks, third-party RPC failure, and irreversible transactions.",
-      "Klasshi is not affiliated with the Solana Foundation, Circle, Tether, or any wallet provider. We do not control public blockchain networks.",
+      "Klasshi is not affiliated with the Solana Foundation, Circle, Tether, Google, or any wallet provider. We do not control public blockchain networks.",
       "Service may be interrupted for maintenance, outages, or force majeure. We do not guarantee uninterrupted or error-free operation.",
     ],
   },
@@ -117,7 +124,7 @@ const SECTIONS: { id: string; title: string; body: string[] }[] = [
     id: "changes",
     title: "13. Changes to terms",
     body: [
-      "We may update these Terms from time to time. The “Effective date” above will change when we do. Continued use after changes constitutes acceptance of the revised Terms.",
+      "We may update these Terms from time to time. The “Updated” date above will change when we do. Continued use after changes constitutes acceptance of the revised Terms.",
       "Material changes may be highlighted on the Platform. It remains your responsibility to review this page periodically.",
     ],
   },
@@ -133,65 +140,21 @@ const SECTIONS: { id: string; title: string; body: string[] }[] = [
     id: "contact",
     title: "15. Contact",
     body: [
-      "For questions about these Terms, contact support at klasshi.com/support.",
-      "Operator: Klasshi · Website: https://klasshi.com",
+      "Questions about these Terms: https://klasshi.com/support",
+      "Operator: Klasshi · Website: https://klasshi.com · Privacy: https://klasshi.com/privacy",
     ],
   },
 ];
 
 export default function TermsPage() {
   return (
-    <main className="legal-page">
-      <header className="legal-hero">
-        <p className="legal-kicker">Legal</p>
-        <h1>Terms &amp; Conditions</h1>
-        <p className="legal-meta">
-          Effective date: <strong>{EFFECTIVE}</strong>
-          <span aria-hidden> · </span>
-          Klasshi · klasshi.com
-        </p>
-        <p className="legal-lead">
-          Please read these Terms carefully before using Klasshi. They form a
-          binding agreement between you and the Platform operator.
-        </p>
-      </header>
-
-      <nav className="legal-toc" aria-label="On this page">
-        <h2>Contents</h2>
-        <ol>
-          {SECTIONS.map((s) => (
-            <li key={s.id}>
-              <a href={`#${s.id}`}>{s.title.replace(/^\d+\.\s*/, "")}</a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-
-      <div className="legal-body">
-        {SECTIONS.map((s) => (
-          <section key={s.id} id={s.id} className="legal-section">
-            <h2>{s.title}</h2>
-            {s.body.map((p) => (
-              <p key={p.slice(0, 48)}>{p}</p>
-            ))}
-          </section>
-        ))}
-      </div>
-
-      <footer className="legal-footer">
-        <p>
-          By using Klasshi you acknowledge that gambling involves risk and that
-          you are of legal age in your jurisdiction.
-        </p>
-        <div className="legal-footer__actions">
-          <Link href="/" className="btn btn--primary">
-            Back to lobby
-          </Link>
-          <Link href="/referral" className="btn">
-            Referral terms
-          </Link>
-        </div>
-      </footer>
-    </main>
+    <LegalDocument
+      title="Terms & Conditions"
+      effective={EFFECTIVE}
+      updated={UPDATED}
+      lead="Please read these Terms carefully before using Klasshi. They form a binding agreement between you and the Platform operator."
+      sections={SECTIONS}
+      footerNote="By using Klasshi you acknowledge that gambling involves risk and that you are of legal age in your jurisdiction."
+    />
   );
 }

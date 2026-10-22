@@ -91,8 +91,11 @@ export function SiteFooter() {
         <div className="site-footer__bar">
           <p>
             © {year} Klasshi · klasshi.com · 18+ · Outcomes are random and
-            house-edged ·{" "}
-            <Link href="/terms">Terms</Link>
+            house-edged · <Link href="/terms">Terms</Link>
+            {" · "}
+            <Link href="/privacy">Privacy</Link>
+            {" · "}
+            <Link href="/support">Support</Link>
           </p>
         </div>
       </div>
