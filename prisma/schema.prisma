@@ -11,6 +11,9 @@ datasource db {
 model User {
   id            String     @id @default(cuid())
   privyId       String?    @unique
+  /// Supabase Auth user id
+  supabaseId    String?    @unique
+  email         String?
   walletAddress String?
   displayName   String?
   /// Short public path: /pay/skate_xxxx — Stake-style personal deposit link

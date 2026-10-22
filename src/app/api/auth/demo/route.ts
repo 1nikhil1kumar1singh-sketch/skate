@@ -5,10 +5,14 @@ import { createUser } from "@/lib/users";
 import { findReferrerIdByCode } from "@/lib/referral";
 import { prisma } from "@/lib/prisma";
 
+/**
+ * Privy-free session login.
+ * Works whenever Privy is not configured. Gives demo balance only in DEMO_MODE.
+ */
 export async function POST(req: NextRequest) {
-  if (!config.demoMode) {
+  if (config.privyAppId) {
     return NextResponse.json(
-      { error: "Demo mode is disabled. Use Privy login." },
+      { error: "Use wallet / Privy login" },
       { status: 403 },
     );
   }
@@ -27,15 +31,19 @@ export async function POST(req: NextRequest) {
 
   const user = await createUser({
     displayName: `Player-${Math.floor(Math.random() * 9000 + 1000)}`,
-    withDemoBalance: true,
+    withDemoBalance: config.demoMode,
     referredById: referredById ?? undefined,
   });
 
-  const token = await createSessionToken({ userId: user.id, demo: true });
+  const token = await createSessionToken({
+    userId: user.id,
+    demo: true,
+  });
   await setSessionCookie(token);
 
   return NextResponse.json({
     ok: true,
+    guest: true,
     user: {
       id: user.id,
       displayName: user.displayName,

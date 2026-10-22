@@ -55,6 +55,9 @@ export function SiteFooter() {
                 </li>
               ))}
               <li>
+                <Link href="/offers">Offers</Link>
+              </li>
+              <li>
                 <Link href="/referral">Referral</Link>
               </li>
               <li>
@@ -64,8 +67,11 @@ export function SiteFooter() {
           </div>
 
           <div className="site-footer__col">
-            <h3>Responsible</h3>
+            <h3>Legal</h3>
             <ul>
+              <li>
+                <Link href="/terms">Terms &amp; Conditions</Link>
+              </li>
               <li>
                 <span>18+ only</span>
               </li>
@@ -78,7 +84,9 @@ export function SiteFooter() {
 
         <div className="site-footer__bar">
           <p>
-            © {year} Klasshi · klasshi.com · 18+ · Outcomes are random and house-edged
+            © {year} Klasshi · klasshi.com · 18+ · Outcomes are random and
+            house-edged ·{" "}
+            <Link href="/terms">Terms</Link>
           </p>
         </div>
       </div>

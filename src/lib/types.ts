@@ -17,6 +17,8 @@ export type FirstDepositOffer = {
 export type UserView = {
   id: string;
   displayName: string | null;
+  /** True for browse-as-guest sessions (no email / wallet account). */
+  isGuest?: boolean;
   walletAddress?: string | null;
   depositPath?: string | null;
   depositAddress?: string | null;

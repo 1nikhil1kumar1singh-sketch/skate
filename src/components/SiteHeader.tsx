@@ -3,15 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSkate } from "@/hooks/useSkate";
+import { useAuthModal } from "@/components/AuthModal";
 
 const NAV = [
   { href: "/", label: "Lobby", highlight: false },
+  { href: "/offers", label: "Offers", highlight: true },
   { href: "/referral", label: "Referral", highlight: true },
   { href: "/leaderboard", label: "Leaderboard", highlight: true },
 ] as const;
 
 export function SiteHeader() {
   const { user, loading } = useSkate();
+  const { openAuth } = useAuthModal();
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -45,7 +48,7 @@ export function SiteHeader() {
         <div className="header-actions">
           {loading ? (
             <span className="muted">…</span>
-          ) : user ? (
+          ) : user && !user.isGuest ? (
             <>
               <Link
                 href="/profile"
@@ -68,9 +71,13 @@ export function SiteHeader() {
               </Link>
             </>
           ) : (
-            <Link href="/profile" className="btn btn--primary btn--compact">
+            <button
+              type="button"
+              className="btn btn--primary btn--compact"
+              onClick={() => openAuth("signin")}
+            >
               Sign in
-            </Link>
+            </button>
           )}
         </div>
       </div>

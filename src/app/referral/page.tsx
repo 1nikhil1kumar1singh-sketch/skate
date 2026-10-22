@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSkate } from "@/hooks/useSkate";
+import { useAuthModal } from "@/components/AuthModal";
 import {
   REFERRAL_REWARD_USD,
   REFERRAL_RULES,
-  REFERRAL_UNLOCK_DAYS,
   type ReferralRowView,
   type ReferralSummaryView,
 } from "@/lib/referral";
@@ -47,7 +47,8 @@ function formatDate(iso: string | null) {
 }
 
 export default function ReferralPage() {
-  const { user, loginDemo, loading, setUserBalance } = useSkate();
+  const { user, loading, setUserBalance } = useSkate();
+  const { openAuth } = useAuthModal();
   const [copied, setCopied] = useState(false);
   const [data, setData] = useState<ReferralPayload | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -107,8 +108,7 @@ export default function ReferralPage() {
         <p className="promo-kicker">Invite</p>
         <h1>Referral</h1>
         <p className="promo-lead">
-          Earn <strong>${REFERRAL_REWARD_USD}</strong> when a friend plays.
-          Credit unlocks after <strong>{REFERRAL_UNLOCK_DAYS} days</strong>.
+          Earn ${REFERRAL_REWARD_USD} when a friend plays.
         </p>
       </section>
 
@@ -124,9 +124,9 @@ export default function ReferralPage() {
               type="button"
               className="btn btn--primary"
               disabled={loading}
-              onClick={() => void loginDemo()}
+              onClick={() => openAuth("signin")}
             >
-              Enter Klasshi
+              Sign in
             </button>
           </div>
         ) : (

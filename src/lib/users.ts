@@ -5,6 +5,8 @@ import { createDepositWallet } from "./depositWallet";
 
 export async function createUser(input?: {
   privyId?: string;
+  supabaseId?: string;
+  email?: string;
   walletAddress?: string;
   displayName?: string;
   withDemoBalance?: boolean;
@@ -15,6 +17,8 @@ export async function createUser(input?: {
   const user = await prisma.user.create({
     data: {
       privyId: input?.privyId,
+      supabaseId: input?.supabaseId,
+      email: input?.email,
       walletAddress: input?.walletAddress,
       displayName: input?.displayName ?? "Player",
       depositPath: deposit.depositPath,

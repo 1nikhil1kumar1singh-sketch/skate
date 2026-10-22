@@ -1,10 +1,12 @@
 "use client";
 
 import { useSkate } from "@/hooks/useSkate";
+import { useAuthModal } from "@/components/AuthModal";
 
 /** Stake-style Real / Fun switch. */
 export function FunPlayToggle() {
   const { funPlay, setFunPlay, user } = useSkate();
+  const { openAuth } = useAuthModal();
 
   return (
     <div className={`fun-play ${funPlay ? "is-fun" : ""}`}>
@@ -29,7 +31,13 @@ export function FunPlayToggle() {
           {user ? (
             <span>{user.balance.availableDisplay}</span>
           ) : (
-            <span>Sign in to play</span>
+            <button
+              type="button"
+              className="fun-play__signin"
+              onClick={() => openAuth("signin")}
+            >
+              Sign in to play
+            </button>
           )}
         </p>
       ) : null}

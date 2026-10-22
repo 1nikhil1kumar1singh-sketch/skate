@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Orbitron, Space_Grotesk } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileDock } from "@/components/MobileDock";
+import { OfferPopup } from "@/components/OfferPopup";
 import "./globals.css";
 
 const display = Orbitron({
@@ -44,6 +46,9 @@ export default function RootLayout({
           <div className="app-main">{children}</div>
           <SiteFooter />
           <MobileDock />
+          <Suspense fallback={null}>
+            <OfferPopup />
+          </Suspense>
         </Providers>
       </body>
     </html>

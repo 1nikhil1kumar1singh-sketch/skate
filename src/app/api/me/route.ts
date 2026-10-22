@@ -19,6 +19,7 @@ export async function GET() {
       user: null,
       demoMode: config.demoMode,
       liveWallet: live,
+      supabaseConfigured: config.supabaseConfigured,
     });
   }
 
@@ -28,6 +29,7 @@ export async function GET() {
       user: null,
       demoMode: config.demoMode,
       liveWallet: live,
+      supabaseConfigured: config.supabaseConfigured,
     });
   }
 
@@ -38,13 +40,17 @@ export async function GET() {
   const firstDepositEligible =
     firstUser?.id === user.id && !user.firstDepositBonusClaimed;
 
+  const isGuest = !user.supabaseId && !user.privyId;
+
   return NextResponse.json({
     demoMode: config.demoMode,
     liveWallet: live,
     privyConfigured: Boolean(config.privyAppId),
+    supabaseConfigured: config.supabaseConfigured,
     user: {
       id: user.id,
       displayName: user.displayName,
+      isGuest,
       walletAddress: user.walletAddress,
       depositPath: user.depositPath,
       depositAddress: user.depositAddress,

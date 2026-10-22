@@ -4,11 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSkate } from "@/hooks/useSkate";
+import { useAuthModal } from "@/components/AuthModal";
 import { BetHistory } from "@/components/BetHistory";
 import { GAME_CATALOG } from "@/lib/catalog";
 
 export default function HomePage() {
   const { user, loginDemo, loading } = useSkate();
+  const { openAuth } = useAuthModal();
 
   return (
     <main>
@@ -51,14 +53,18 @@ export default function HomePage() {
               <button
                 type="button"
                 className="btn btn--primary"
+                onClick={() => openAuth("signin")}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                className="btn"
                 disabled={loading}
                 onClick={() => void loginDemo()}
               >
-                Enter Klasshi
+                Browse as guest
               </button>
-              <Link href="/play/mines" className="btn">
-                Play Mines
-              </Link>
             </motion.div>
           </div>
         </section>
@@ -85,7 +91,10 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.04, 0.4), duration: 0.35 }}
               >
-                <Link href={`/play/${g.slug}`} className="game-link game-link--art">
+                <Link
+                  href={`/play/${g.slug}`}
+                  className="game-link game-link--art"
+                >
                   <div className="game-link__media">
                     <Image
                       src={g.image}

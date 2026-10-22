@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSkate } from "@/hooks/useSkate";
+import { useAuthModal } from "@/components/AuthModal";
 
 const TABS = [
   { href: "/", label: "Lobby", match: (p: string) => p === "/" },
@@ -20,15 +22,13 @@ const TABS = [
     label: "Refer",
     match: (p: string) => p.startsWith("/referral"),
   },
-  {
-    href: "/profile",
-    label: "Wallet",
-    match: (p: string) => p.startsWith("/profile") || p.startsWith("/wallet"),
-  },
 ] as const;
 
 export function MobileDock() {
   const pathname = usePathname();
+  const { user } = useSkate();
+  const { openAuth } = useAuthModal();
+  const isGuest = !user || user.isGuest;
 
   return (
     <nav className="mobile-dock" aria-label="Mobile">
@@ -41,6 +41,26 @@ export function MobileDock() {
           {tab.label}
         </Link>
       ))}
+      {isGuest ? (
+        <button
+          type="button"
+          className={pathname.startsWith("/profile") ? "is-active" : undefined}
+          onClick={() => openAuth("signin")}
+        >
+          Sign in
+        </button>
+      ) : (
+        <Link
+          href="/profile"
+          className={
+            pathname.startsWith("/profile") || pathname.startsWith("/wallet")
+              ? "is-active"
+              : undefined
+          }
+        >
+          Wallet
+        </Link>
+      )}
     </nav>
   );
 }

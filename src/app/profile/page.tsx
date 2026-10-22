@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSkate } from "@/hooks/useSkate";
 import { fromMicroUsdc } from "@/lib/money";
 import { Pagination } from "@/components/Pagination";
@@ -37,13 +38,13 @@ function formatWhen(iso: string) {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const {
     user,
     loading,
     liveWallet,
     solana,
     wallet,
-    loginDemo,
     logout,
     deposit,
     withdraw,
@@ -52,12 +53,15 @@ export default function ProfilePage() {
     refresh,
   } = useSkate();
 
+  useEffect(() => {
+    if (!loading && !user) router.replace("/");
+  }, [loading, user, router]);
+
   const [panel, setPanel] = useState<Panel>("cashier");
   const [cashTab, setCashTab] = useState<"deposit" | "withdraw">("deposit");
   const [displayName, setDisplayName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [depositAmount, setDepositAmount] = useState(50);
-  const [depositSig, setDepositSig] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState(10);
   const [withdrawTo, setWithdrawTo] = useState("");
   const [withdrawAsset, setWithdrawAsset] = useState<"USDC" | "USDT">("USDC");
@@ -144,32 +148,14 @@ export default function ProfilePage() {
   async function onDeposit() {
     setBusy("deposit");
     try {
-      if (liveWallet) {
-        if (!depositSig.trim()) {
-          throw new Error("Paste a transaction signature, or use Sync after sending");
-        }
-        const dep = await deposit({
-          signature: depositSig.trim(),
-          amount: Math.max(0.01, depositAmount),
-        });
-        setDepositSig("");
-        const bonus = Number(dep.bonusGranted ?? 0);
-        flash(
-          "ok",
-          bonus > 0
-            ? `Deposit credited · +${(bonus / 1e6).toFixed(0)} USDC bonus`
-            : "Deposit credited",
-        );
-      } else {
-        const dep = await deposit({ demo: true, amount: depositAmount });
-        const bonus = Number(dep.bonusGranted ?? 0);
-        flash(
-          "ok",
-          bonus > 0
-            ? `Added ${depositAmount} USDC · +${(bonus / 1e6).toFixed(0)} USDC bonus`
-            : `Added ${depositAmount} USDC`,
-        );
-      }
+      const dep = await deposit({ demo: true, amount: depositAmount });
+      const bonus = Number(dep.bonusGranted ?? 0);
+      flash(
+        "ok",
+        bonus > 0
+          ? `Added $${depositAmount} · +$${(bonus / 1e6).toFixed(0)} bonus`
+          : `Added $${depositAmount}`,
+      );
       await loadHistory(1);
     } catch (e) {
       flash("err", e instanceof Error ? e.message : "Deposit failed");
@@ -230,20 +216,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <main className="vault-page">
-        <section className="vault-gate">
-          <p className="vault-kicker">Wallet</p>
-          <h1>Sign in to deposit & play</h1>
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={() => void loginDemo()}
-          >
-            Enter Klasshi
-          </button>
-          <Link href="/" className="btn btn--ghost">
-            Browse lobby
-          </Link>
-        </section>
+        <div className="vault-skeleton">Redirecting to lobby…</div>
       </main>
     );
   }
@@ -257,17 +230,31 @@ export default function ProfilePage() {
           <div className="vault-avatar" aria-hidden>
             {initial}
           </div>
-          <div>
+          <div className="vault-hero__copy">
             <p className="vault-kicker">Cashier</p>
             <h1>{user.displayName ?? "Player"}</h1>
-            <div className="vault-badges">
+            <p className="vault-meta">
               <span
-                className={`vault-badge ${liveWallet ? "vault-badge--live" : "vault-badge--demo"}`}
+                className={`vault-meta__status ${liveWallet ? "is-live" : "is-demo"}`}
               >
-                {liveWallet ? `Live · ${solana?.cluster}` : "Demo"}
+                {liveWallet ? "Live" : "Demo"}
               </span>
-              <span className="vault-badge">{stables.join(" + ")}</span>
-            </div>
+              {liveWallet && solana?.cluster ? (
+                <>
+                  <span className="vault-meta__sep" aria-hidden>
+                    ·
+                  </span>
+                  <span>
+                    {solana.cluster.charAt(0).toUpperCase() +
+                      solana.cluster.slice(1)}
+                  </span>
+                </>
+              ) : null}
+              <span className="vault-meta__sep" aria-hidden>
+                ·
+              </span>
+              <span>{stables.join(" · ")}</span>
+            </p>
           </div>
         </div>
 
@@ -363,47 +350,66 @@ export default function ProfilePage() {
               </div>
 
               {cashTab === "deposit" ? (
-                <div className="vault-stack">
+                <div className="vault-form">
                   {user.firstDepositOffer?.eligible ? (
                     <div className="deposit-offer" role="status">
-                      <p className="deposit-offer__eyebrow">First deposit</p>
+                      <p className="deposit-offer__eyebrow">First deposit offer</p>
                       <h3>
-                        {user.firstDepositOffer.matchPercent}% match · up to $
+                        {user.firstDepositOffer.matchPercent}% match up to $
                         {user.firstDepositOffer.maxBonusUsd}
                       </h3>
-                      <ul>
-                        <li>
-                          Min ${user.firstDepositOffer.minDepositUsd}
-                        </li>
-                        <li>
-                          {user.firstDepositOffer.matchPercent}% bonus match
-                        </li>
-                        <li>
-                          Max ${user.firstDepositOffer.maxBonusUsd} bonus
-                        </li>
-                      </ul>
+                      <p>
+                        Minimum deposit ${user.firstDepositOffer.minDepositUsd}.
+                        Bonus credited with your first qualifying deposit.
+                      </p>
                     </div>
                   ) : null}
 
-                  <div className="vault-address-card">
-                    <div className="vault-address-card__head">
-                      <span>Deposit address</span>
-                      <span className="muted">{stables.join(" / ")}</span>
-                    </div>
-                    <code>{user.depositAddress ?? "Generating…"}</code>
-                    <div className="vault-address-card__actions">
+                  <label className="field">
+                    <span>Network</span>
+                    <select defaultValue="solana" disabled>
+                      <option value="solana">Solana</option>
+                    </select>
+                  </label>
+
+                  <label className="field">
+                    <span>Accepted assets</span>
+                    <select defaultValue="all" disabled>
+                      <option value="all">{stables.join(" + ")}</option>
+                    </select>
+                  </label>
+
+                  <label className="field">
+                    <span>Deposit address</span>
+                    <div className="vault-address-field">
+                      <input
+                        readOnly
+                        value={user.depositAddress ?? "Generating…"}
+                        spellCheck={false}
+                      />
                       <button
                         type="button"
-                        className="btn btn--primary"
+                        className="btn"
                         disabled={!user.depositAddress}
                         onClick={() =>
                           user.depositAddress &&
                           void copy("addr", user.depositAddress)
                         }
                       >
-                        {copiedKey === "addr" ? "Copied" : "Copy address"}
+                        {copiedKey === "addr" ? "Copied" : "Copy"}
                       </button>
-                      {user.depositUrl ? (
+                    </div>
+                  </label>
+
+                  {user.depositUrl ? (
+                    <label className="field">
+                      <span>Pay link</span>
+                      <div className="vault-address-field">
+                        <input
+                          readOnly
+                          value={user.depositUrl}
+                          spellCheck={false}
+                        />
                         <button
                           type="button"
                           className="btn"
@@ -414,62 +420,45 @@ export default function ProfilePage() {
                             )
                           }
                         >
-                          {copiedKey === "link" ? "Copied" : "Copy pay link"}
+                          {copiedKey === "link" ? "Copied" : "Copy"}
                         </button>
-                      ) : null}
-                    </div>
-                  </div>
+                      </div>
+                    </label>
+                  ) : null}
 
                   {liveWallet ? (
-                    <>
-                      <button
-                        type="button"
-                        className="btn btn--primary btn--block"
-                        disabled={busy === "sync"}
-                        onClick={() => void onSyncDeposit()}
-                      >
-                        {busy === "sync" ? "Syncing…" : "Sync deposits"}
-                      </button>
-
-                      <details className="vault-advanced">
-                        <summary>Advanced · credit by signature</summary>
-                        <label className="field">
-                          <span>Transaction signature</span>
-                          <input
-                            value={depositSig}
-                            onChange={(e) => setDepositSig(e.target.value)}
-                            placeholder="Paste Solana tx signature"
-                            spellCheck={false}
-                          />
-                        </label>
-                        <button
-                          type="button"
-                          className="btn btn--block"
-                          disabled={busy === "deposit" || !depositSig.trim()}
-                          onClick={() => void onDeposit()}
-                        >
-                          {busy === "deposit" ? "Crediting…" : "Credit signature"}
-                        </button>
-                      </details>
-                    </>
+                    <button
+                      type="button"
+                      className="btn btn--primary btn--block"
+                      disabled={busy === "sync"}
+                      onClick={() => void onSyncDeposit()}
+                    >
+                      {busy === "sync" ? "Syncing…" : "Sync deposits"}
+                    </button>
                   ) : (
                     <>
-                      <div className="vault-amount-row">
-                        {[25, 50, 100, 250].map((n) => (
-                          <button
-                            key={n}
-                            type="button"
-                            className={
-                              depositAmount === n ? "is-active" : undefined
-                            }
-                            onClick={() => setDepositAmount(n)}
-                          >
-                            {n}
-                          </button>
-                        ))}
-                      </div>
                       <label className="field">
-                        <span>Amount ($)</span>
+                        <span>Quick amount</span>
+                        <select
+                          value={
+                            [25, 50, 100, 250].includes(depositAmount)
+                              ? String(depositAmount)
+                              : "custom"
+                          }
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            if (v !== "custom") setDepositAmount(Number(v));
+                          }}
+                        >
+                          <option value="25">$25</option>
+                          <option value="50">$50</option>
+                          <option value="100">$100</option>
+                          <option value="250">$250</option>
+                          <option value="custom">Custom</option>
+                        </select>
+                      </label>
+                      <label className="field">
+                        <span>Amount (USD)</span>
                         <input
                           type="number"
                           min={1}
@@ -483,12 +472,11 @@ export default function ProfilePage() {
                       {user.firstDepositOffer?.eligible &&
                       depositAmount >= user.firstDepositOffer.minDepositUsd ? (
                         <p className="deposit-offer__preview">
-                          +$
+                          Estimated bonus +$
                           {Math.min(
                             depositAmount,
                             user.firstDepositOffer.maxBonusUsd,
-                          )}{" "}
-                          bonus
+                          )}
                         </p>
                       ) : null}
                       <button
@@ -505,41 +493,49 @@ export default function ProfilePage() {
                   )}
                 </div>
               ) : (
-                <div className="vault-stack">
-                  <div
-                    className="segmented"
-                    role="group"
-                    aria-label="Withdraw asset"
-                  >
-                    {withdrawAssets.map((asset) => (
-                      <button
-                        key={asset}
-                        type="button"
-                        className={
-                          withdrawAsset === asset ? "is-active" : undefined
-                        }
-                        onClick={() => setWithdrawAsset(asset)}
-                      >
-                        {asset}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="vault-amount-row">
-                    {[5, 10, 25, 50].map((n) => (
-                      <button
-                        key={n}
-                        type="button"
-                        className={
-                          withdrawAmount === n ? "is-active" : undefined
-                        }
-                        onClick={() => setWithdrawAmount(n)}
-                      >
-                        {n}
-                      </button>
-                    ))}
-                  </div>
+                <div className="vault-form">
                   <label className="field">
-                    <span>Amount ({withdrawAsset})</span>
+                    <span>Payout asset</span>
+                    <select
+                      value={withdrawAsset}
+                      onChange={(e) =>
+                        setWithdrawAsset(e.target.value as "USDC" | "USDT")
+                      }
+                    >
+                      {withdrawAssets.map((asset) => (
+                        <option key={asset} value={asset}>
+                          {asset}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="field">
+                    <span>Quick amount</span>
+                    <select
+                      value={
+                        [5, 10, 25, 50].includes(withdrawAmount)
+                          ? String(withdrawAmount)
+                          : "custom"
+                      }
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (v !== "custom") setWithdrawAmount(Number(v));
+                      }}
+                    >
+                      <option value="5">$5</option>
+                      <option value="10">$10</option>
+                      <option value="25">$25</option>
+                      <option value="50">$50</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </label>
+
+                  <label className="field">
+                    <span>
+                      Amount ({withdrawAsset}) · Available{" "}
+                      {user.balance.availableDisplay}
+                    </span>
                     <input
                       type="number"
                       min={0.01}
@@ -550,33 +546,36 @@ export default function ProfilePage() {
                       }
                     />
                   </label>
+
                   <label className="field">
-                    <span>Destination (Solana)</span>
+                    <span>Destination wallet</span>
                     <input
                       value={withdrawTo}
                       onChange={(e) => setWithdrawTo(e.target.value)}
-                      placeholder="Wallet address"
+                      placeholder="Solana address"
                       spellCheck={false}
                     />
                   </label>
+
                   <div className="vault-fee-card">
                     <div>
-                      <span className="muted">Payout asset</span>
+                      <span>Asset</span>
                       <strong>{withdrawAsset}</strong>
                     </div>
                     <div>
-                      <span className="muted">Fee ({feePreview.pct}%)</span>
+                      <span>Fee ({feePreview.pct}%)</span>
                       <strong>
                         {feePreview.fee.toFixed(2)} {withdrawAsset}
                       </strong>
                     </div>
-                    <div>
-                      <span className="muted">You receive</span>
+                    <div className="vault-fee-card__total">
+                      <span>You receive</span>
                       <strong className="vault-receive">
                         {feePreview.sent.toFixed(2)} {withdrawAsset}
                       </strong>
                     </div>
                   </div>
+
                   <button
                     type="button"
                     className="btn btn--primary btn--block"
@@ -585,7 +584,7 @@ export default function ProfilePage() {
                   >
                     {busy === "withdraw"
                       ? "Sending…"
-                      : `Confirm withdraw · ${withdrawAsset}`}
+                      : `Withdraw ${withdrawAsset}`}
                   </button>
                 </div>
               )}

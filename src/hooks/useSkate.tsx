@@ -113,6 +113,13 @@ export function SkateProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const logout = useCallback(async () => {
+    try {
+      const { getSupabaseBrowser } = await import("@/lib/supabase/client");
+      const sb = getSupabaseBrowser();
+      if (sb) await sb.auth.signOut();
+    } catch {
+      /* ignore */
+    }
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
   }, []);

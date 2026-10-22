@@ -10,6 +10,16 @@ export const config = {
   })(),
   privyAppId: process.env.NEXT_PUBLIC_PRIVY_APP_ID ?? "",
   privyAppSecret: process.env.PRIVY_APP_SECRET ?? "",
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+  supabaseAnonKey:
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    "",
+  supabaseConfigured: Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+  ),
   sessionSecret: process.env.SESSION_SECRET ?? "skate-dev-session",
   solana: {
     cluster: (process.env.NEXT_PUBLIC_SOLANA_CLUSTER ?? "devnet") as
