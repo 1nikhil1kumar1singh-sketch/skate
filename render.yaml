@@ -1,0 +1,14 @@
+# Blueprint for Render (optional). Or set Build Command manually in the dashboard:
+#   npm install && npm run build
+services:
+  - type: web
+    name: klasshi
+    runtime: node
+    plan: starter
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=4096"
