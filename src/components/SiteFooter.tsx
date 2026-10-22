@@ -76,6 +76,9 @@ export function SiteFooter() {
                 <Link href="/terms">Terms &amp; Conditions</Link>
               </li>
               <li>
+                <Link href="/privacy">Privacy Policy</Link>
+              </li>
+              <li>
                 <span>18+ only</span>
               </li>
               <li>
