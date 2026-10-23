@@ -32,8 +32,17 @@ export async function POST(req: NextRequest) {
   const { signature, amount, demo } = parsed.data;
   const live = isLiveWalletReady();
 
-  // Demo top-up only when explicitly allowed (demo mode or ?demo while not live)
+  // Demo top-up only when DEMO_MODE is on and live treasury is not active
   if (demo && !live) {
+    if (!config.demoMode) {
+      return NextResponse.json(
+        {
+          error:
+            "Live wallet not configured. Run: npm run setup:treasury (and restart)",
+        },
+        { status: 503 },
+      );
+    }
     const credit = toMicroUsdc(amount ?? 50);
     const { balance, bonusGranted } = await prisma.$transaction(async (tx) => {
       await tx.deposit.create({
@@ -106,27 +115,14 @@ export async function POST(req: NextRequest) {
 
   try {
     const minAmount = toMicroUsdc(amount ?? 0.01);
-    // Accept USDC or USDT to personal address (preferred) or treasury fallback
-    let credited: bigint;
-    let symbol = "USDC";
-    try {
-      const hit = await verifyStableDepositToOwner(
-        signature,
-        user.depositAddress,
-        minAmount,
-      );
-      credited = hit.credited;
-      symbol = hit.symbol;
-    } catch {
-      if (!config.solana.treasuryAddress) throw new Error("Deposit not found");
-      const hit = await verifyStableDepositToOwner(
-        signature,
-        config.solana.treasuryAddress,
-        minAmount,
-      );
-      credited = hit.credited;
-      symbol = hit.symbol;
-    }
+    // Personal deposit address only — never claim treasury-bound txs
+    const hit = await verifyStableDepositToOwner(
+      signature,
+      user.depositAddress,
+      minAmount,
+    );
+    const credited = hit.credited;
+    const symbol = hit.symbol;
 
     const { updated, bonusGranted } = await prisma.$transaction(async (tx) => {
       await tx.deposit.create({

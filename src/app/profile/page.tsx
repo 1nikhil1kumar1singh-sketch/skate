@@ -169,7 +169,20 @@ export default function ProfilePage() {
     try {
       const data = await syncDeposits();
       const credited = (Number(data.credited ?? 0) / 1e6).toFixed(2);
-      flash("ok", `Synced · +${credited} USDC credited`);
+      const symbols =
+        data.creditedSymbols?.length
+          ? data.creditedSymbols.join("/")
+          : "USD";
+      const sweepNote =
+        data.sweepErrors?.length
+          ? ` · sweep issue: ${data.sweepErrors[0]}`
+          : "";
+      flash(
+        "ok",
+        Number(data.credited ?? 0) > 0
+          ? `Synced · +${credited} ${symbols} credited${sweepNote}`
+          : `Synced · no new deposits${sweepNote}`,
+      );
       await refresh();
       await loadHistory(1);
     } catch (e) {
@@ -196,7 +209,12 @@ export default function ProfilePage() {
         ? fromMicroUsdc(result.sent)
         : feePreview.sent;
       const asset = result.asset ?? withdrawAsset;
-      flash("ok", `Withdrew ${sentAmt.toFixed(2)} ${asset}`);
+      flash(
+        "ok",
+        result.warning
+          ? `Withdrew ${sentAmt.toFixed(2)} ${asset} · ${result.warning}`
+          : `Withdrew ${sentAmt.toFixed(2)} ${asset}`,
+      );
       await loadHistory(1);
     } catch (e) {
       flash("err", e instanceof Error ? e.message : "Withdraw failed");

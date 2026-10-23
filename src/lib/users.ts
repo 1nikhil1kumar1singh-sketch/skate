@@ -41,13 +41,28 @@ export async function createUser(input?: {
   return user;
 }
 
-/** Ensure older users get a personal deposit path + address. */
+/** Ensure older users get a personal deposit path + address + secret. */
 export async function ensureDepositPath(userId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return null;
-  if (user.depositPath && user.depositAddress) return user;
+  if (user.depositPath && user.depositAddress && user.depositSecret) {
+    return user;
+  }
 
   const deposit = createDepositWallet();
+
+  // Address without secret can't be swept — issue a fresh deposit wallet.
+  if (user.depositAddress && !user.depositSecret) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        depositPath: deposit.depositPath,
+        depositAddress: deposit.depositAddress,
+        depositSecret: deposit.depositSecret,
+      },
+    });
+  }
+
   return prisma.user.update({
     where: { id: userId },
     data: {

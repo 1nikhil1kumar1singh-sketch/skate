@@ -27,6 +27,13 @@ function resolveAsset(requested: "USDC" | "USDT"): StableSymbol {
   return hit.symbol;
 }
 
+class InsufficientBalanceError extends Error {
+  constructor() {
+    super("Insufficient balance");
+    this.name = "InsufficientBalanceError";
+  }
+}
+
 export async function POST(req: NextRequest) {
   const session = await readSession();
   if (!session) {
@@ -58,7 +65,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!live) {
-    if (!config.demoMode && !parsed.data.demo) {
+    if (!config.demoMode) {
       return NextResponse.json(
         {
           error: "Live wallet not configured. Run: npm run setup:treasury",
@@ -70,42 +77,51 @@ export async function POST(req: NextRequest) {
     const amount = toMicroUsdc(parsed.data.amount);
     const fee = (amount * BigInt(config.withdrawFeeBps)) / BigInt(10_000);
     const sendAmount = amount - fee;
-    const balance = await prisma.balance.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!balance || balance.available < amount) {
-      return NextResponse.json({ error: "Insufficient balance" }, { status: 400 });
+
+    try {
+      const updated = await prisma.$transaction(async (tx) => {
+        const locked = await tx.balance.updateMany({
+          where: { userId: session.userId, available: { gte: amount } },
+          data: { available: { decrement: amount } },
+        });
+        if (locked.count !== 1) {
+          throw new InsufficientBalanceError();
+        }
+        await tx.withdrawal.create({
+          data: {
+            userId: session.userId,
+            amount: sendAmount,
+            toAddress: parsed.data.toAddress,
+            signature: `demo-wd-${asset}-${Date.now()}`,
+            status: `demo:${asset}`,
+          },
+        });
+        return tx.balance.findUniqueOrThrow({
+          where: { userId: session.userId },
+        });
+      });
+
+      return NextResponse.json({
+        ok: true,
+        mode: "demo",
+        asset,
+        fee: fee.toString(),
+        sent: sendAmount.toString(),
+        balance: serializeBalance(
+          updated.available,
+          updated.locked,
+          updated.bonus,
+        ),
+      });
+    } catch (error) {
+      if (error instanceof InsufficientBalanceError) {
+        return NextResponse.json(
+          { error: "Insufficient balance" },
+          { status: 400 },
+        );
+      }
+      throw error;
     }
-
-    const updated = await prisma.$transaction(async (tx) => {
-      const next = await tx.balance.update({
-        where: { userId: session.userId },
-        data: { available: { decrement: amount } },
-      });
-      await tx.withdrawal.create({
-        data: {
-          userId: session.userId,
-          amount: sendAmount,
-          toAddress: parsed.data.toAddress,
-          signature: `demo-wd-${asset}-${Date.now()}`,
-          status: `demo:${asset}`,
-        },
-      });
-      return next;
-    });
-
-    return NextResponse.json({
-      ok: true,
-      mode: "demo",
-      asset,
-      fee: fee.toString(),
-      sent: sendAmount.toString(),
-      balance: serializeBalance(
-        updated.available,
-        updated.locked,
-        updated.bonus,
-      ),
-    });
   }
 
   let toPubkey: PublicKey;
@@ -119,37 +135,80 @@ export async function POST(req: NextRequest) {
   const fee = (amount * BigInt(config.withdrawFeeBps)) / BigInt(10_000);
   const sendAmount = amount - fee;
   if (sendAmount <= BigInt(0)) {
-    return NextResponse.json({ error: "Amount too small after fee" }, { status: 400 });
-  }
-
-  const balance = await prisma.balance.findUnique({
-    where: { userId: session.userId },
-  });
-  if (!balance || balance.available < amount) {
-    return NextResponse.json({ error: "Insufficient balance" }, { status: 400 });
-  }
-
-  try {
-    await prisma.balance.update({
-      where: { userId: session.userId },
-      data: {
-        available: { decrement: amount },
-        locked: { increment: amount },
-      },
-    });
-
-    const signature = await sendStableWithdrawal(
-      toPubkey.toBase58(),
-      sendAmount,
-      asset,
+    return NextResponse.json(
+      { error: "Amount too small after fee" },
+      { status: 400 },
     );
+  }
 
-    const updated = await prisma.$transaction(async (tx) => {
-      await tx.withdrawal.create({
+  // 1) Atomically lock funds + create pending withdrawal (before any broadcast)
+  let pendingId: string;
+  try {
+    const pending = await prisma.$transaction(async (tx) => {
+      const locked = await tx.balance.updateMany({
+        where: { userId: session.userId, available: { gte: amount } },
+        data: {
+          available: { decrement: amount },
+          locked: { increment: amount },
+        },
+      });
+      if (locked.count !== 1) {
+        throw new InsufficientBalanceError();
+      }
+      return tx.withdrawal.create({
         data: {
           userId: session.userId,
           amount: sendAmount,
           toAddress: toPubkey.toBase58(),
+          signature: null,
+          status: `pending:${asset}`,
+        },
+      });
+    });
+    pendingId = pending.id;
+  } catch (error) {
+    if (error instanceof InsufficientBalanceError) {
+      return NextResponse.json(
+        { error: "Insufficient balance" },
+        { status: 400 },
+      );
+    }
+    throw error;
+  }
+
+  // 2) Broadcast on-chain
+  let signature: string;
+  try {
+    signature = await sendStableWithdrawal(
+      toPubkey.toBase58(),
+      sendAmount,
+      asset,
+    );
+  } catch (error) {
+    // Send never landed — safe to refund ledger
+    await prisma.$transaction(async (tx) => {
+      await tx.balance.update({
+        where: { userId: session.userId },
+        data: {
+          available: { increment: amount },
+          locked: { decrement: amount },
+        },
+      });
+      await tx.withdrawal.update({
+        where: { id: pendingId },
+        data: { status: `failed:${asset}` },
+      });
+    });
+    const message = error instanceof Error ? error.message : "Withdraw failed";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+
+  // 3) Send succeeded — NEVER restore available. Finalize DB.
+  try {
+    const updated = await prisma.$transaction(async (tx) => {
+      await tx.withdrawal.update({
+        where: { id: pendingId },
+        data: {
           signature,
           status: `confirmed:${asset}`,
         },
@@ -173,15 +232,38 @@ export async function POST(req: NextRequest) {
         updated.bonus,
       ),
     });
-  } catch (error) {
-    await prisma.balance.update({
+  } catch {
+    // On-chain paid; keep funds deducted. Persist signature for ops.
+    await prisma.withdrawal
+      .update({
+        where: { id: pendingId },
+        data: {
+          signature,
+          status: `sent_unconfirmed:${asset}`,
+        },
+      })
+      .catch(() => {
+        /* best effort */
+      });
+
+    const balance = await prisma.balance.findUniqueOrThrow({
       where: { userId: session.userId },
-      data: {
-        available: { increment: amount },
-        locked: { decrement: amount },
-      },
     });
-    const message = error instanceof Error ? error.message : "Withdraw failed";
-    return NextResponse.json({ error: message }, { status: 400 });
+
+    return NextResponse.json({
+      ok: true,
+      mode: "onchain",
+      asset,
+      signature,
+      fee: fee.toString(),
+      sent: sendAmount.toString(),
+      warning:
+        "Withdrawal sent on-chain; ledger finalize lagged. Keep this signature for support.",
+      balance: serializeBalance(
+        balance.available,
+        balance.locked,
+        balance.bonus,
+      ),
+    });
   }
 }

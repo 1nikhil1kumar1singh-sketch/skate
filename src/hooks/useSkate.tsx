@@ -44,10 +44,13 @@ type SkateContextValue = {
     mode?: string;
     signature?: string;
     asset?: string;
+    warning?: string;
   }>;
   syncDeposits: () => Promise<{
     credited?: string;
+    creditedSymbols?: string[];
     swept?: string;
+    sweepErrors?: string[];
     mode?: string;
     message?: string;
   }>;
@@ -202,6 +205,7 @@ export function SkateProvider({ children }: { children: ReactNode }) {
         mode: data.mode as string | undefined,
         signature: data.signature as string | undefined,
         asset: data.asset as string | undefined,
+        warning: data.warning as string | undefined,
       };
     },
     [],
@@ -216,7 +220,9 @@ export function SkateProvider({ children }: { children: ReactNode }) {
     }
     return data as {
       credited?: string;
+      creditedSymbols?: string[];
       swept?: string;
+      sweepErrors?: string[];
       mode?: string;
       message?: string;
     };

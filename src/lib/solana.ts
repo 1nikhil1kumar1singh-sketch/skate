@@ -61,12 +61,13 @@ export function isLiveWalletReady() {
 
 /** ~0.02 SOL covers ATA rents + a few sweeps/withdrawals. */
 const MIN_TREASURY_FEE_LAMPORTS = 20_000_000n;
+const MIN_TREASURY_FEE_SOL = Number(MIN_TREASURY_FEE_LAMPORTS) / 1e9;
 
 async function assertTreasuryCanPayFees(connection: Connection, payer: Keypair) {
   const balance = await connection.getBalance(payer.publicKey);
   if (BigInt(balance) < MIN_TREASURY_FEE_LAMPORTS) {
     throw new Error(
-      `Treasury needs SOL for fees. Send at least 0.05 SOL to ${payer.publicKey.toBase58()} (current: ${(balance / 1e9).toFixed(4)} SOL).`,
+      `Treasury needs SOL for fees. Send at least ${MIN_TREASURY_FEE_SOL} SOL to ${payer.publicKey.toBase58()} (current: ${(balance / 1e9).toFixed(4)} SOL).`,
     );
   }
 }
