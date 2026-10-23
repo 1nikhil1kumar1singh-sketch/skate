@@ -1023,6 +1023,116 @@ a.btn {
   gap: 1rem;
 }
 
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.admin-tabs > button:not(.btn) {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.admin-tabs > button.is-active {
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-flash {
+  margin: 0;
+  font-size: 0.88rem;
+  color: rgba(180, 210, 160, 0.95);
+}
+
+.admin-search {
+  min-width: min(100%, 16rem);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 0.55rem 0.45rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  vertical-align: top;
+}
+
+.admin-table th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.admin-table tr.is-banned td {
+  opacity: 0.72;
+}
+
+.admin-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.admin-adjust {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.admin-adjust h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.admin-adjust__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.admin-adjust__row input,
+.admin-adjust__row select {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.85rem;
+}
+
+.admin-status.is-banned {
+  color: rgba(230, 140, 140, 0.95);
+}
+
 .admin-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

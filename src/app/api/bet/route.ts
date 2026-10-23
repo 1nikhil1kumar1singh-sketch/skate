@@ -106,6 +106,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  try {
+    const { assertUserNotBanned } = await import("@/lib/assertNotBanned");
+    await assertUserNotBanned(session.userId);
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Suspended" },
+      { status: 403 },
+    );
+  }
+
   const raw = (await req.json()) as Record<string, unknown>;
   const wantBonus = Boolean(raw.useBonus);
   const parsed = bodySchema.safeParse(raw);

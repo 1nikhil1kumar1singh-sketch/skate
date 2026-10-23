@@ -51,6 +51,7 @@ export async function GET() {
       id: user.id,
       displayName: user.displayName,
       isGuest,
+      banned: Boolean(user.banned),
       walletAddress: user.walletAddress,
       depositPath: user.depositPath,
       depositAddress: user.depositAddress,

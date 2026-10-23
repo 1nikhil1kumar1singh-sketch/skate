@@ -28,6 +28,8 @@ model User {
   nonce         Int        @default(0)
   /// First qualifying deposit already received the 100% match bonus
   firstDepositBonusClaimed Boolean @default(false)
+  /// Admin suspend — blocks play, deposit sync credit, and withdraw
+  banned        Boolean    @default(false)
   /// Who invited this user (depositPath / code at signup)
   referredById  String?
   referredBy    User?      @relation("UserReferrals", fields: [referredById], references: [id])

@@ -37,6 +37,16 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  try {
+    const { assertUserNotBanned } = await import("@/lib/assertNotBanned");
+    await assertUserNotBanned(session.userId);
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Suspended" },
+      { status: 403 },
+    );
+  }
+
   if (!isLiveWalletReady()) {
     return NextResponse.json(
       {

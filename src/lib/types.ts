@@ -19,6 +19,7 @@ export type UserView = {
   displayName: string | null;
   /** True for browse-as-guest sessions (no email / wallet account). */
   isGuest?: boolean;
+  banned?: boolean;
   walletAddress?: string | null;
   depositPath?: string | null;
   depositAddress?: string | null;
