@@ -469,21 +469,14 @@ export default function ProfilePage() {
                   </label>
 
                   {liveWallet ? (
-                    <>
-                      <p className="muted vault-deposit-hint">
-                        Send {stables.join(" or ")} to your address. Deposits are
-                        credited and swept to the treasury automatically while
-                        this page is open — or tap Sync now.
-                      </p>
-                      <button
-                        type="button"
-                        className="btn btn--primary btn--block"
-                        disabled={busy === "sync"}
-                        onClick={() => void onSyncDeposit()}
-                      >
-                        {busy === "sync" ? "Syncing…" : "Sync deposits"}
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      className="btn btn--primary btn--block"
+                      disabled={busy === "sync"}
+                      onClick={() => void onSyncDeposit()}
+                    >
+                      {busy === "sync" ? "Syncing…" : "Sync deposits"}
+                    </button>
                   ) : (
                     <>
                       <label className="field">
