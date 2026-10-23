@@ -68,7 +68,36 @@ export default function HomePage() {
             </motion.div>
           </div>
         </section>
-      ) : (
+      ) : null}
+
+      {!user ? (
+        <section className="home-purpose" aria-labelledby="home-purpose-title">
+          <h2 id="home-purpose-title">What Klasshi is</h2>
+          <p>
+            Klasshi is an online casino for adults (18+) at{" "}
+            <strong>klasshi.com</strong>. Our purpose is to let players deposit
+            USDC or USDT on Solana, play provably fair original games (including
+            mines, limbo, crash, dice, keno, roulette, and similar titles), track
+            balances in a custodial cashier, and withdraw to a Solana wallet.
+          </p>
+          <p>
+            Google Sign-In is offered only so you can create and access a Klasshi
+            account with your Google email and basic profile. We use Google
+            authentication APIs solely for sign-in and account linking. Klasshi
+            does not use Google APIs to generate, edit, distribute, or facilitate
+            AI-generated non-consensual intimate imagery (AI NCII), deepfakes, or
+            any similar content.
+          </p>
+          <p>
+            Gambling involves risk. You must be of legal age in your jurisdiction.
+            See our{" "}
+            <Link href="/terms">Terms</Link> and{" "}
+            <Link href="/privacy">Privacy Policy</Link>.
+          </p>
+        </section>
+      ) : null}
+
+      {user ? (
         <section className="lobby">
           <div className="lobby-head">
             <div className="section-head">
@@ -125,7 +154,7 @@ export default function HomePage() {
             </p>
           </details>
         </section>
-      )}
+      ) : null}
     </main>
   );
 }

@@ -714,6 +714,40 @@ a.btn {
   z-index: 2;
 }
 
+.home-purpose {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.25rem 1.25rem 3rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.home-purpose h2 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  font-weight: 650;
+}
+
+.home-purpose p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.home-purpose strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.home-purpose a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .hero-cta,
 .hero-cta .btn {
   position: relative;

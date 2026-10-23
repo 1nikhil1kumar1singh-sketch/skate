@@ -24,7 +24,7 @@ const body = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Klasshi — Solana USDC Casino",
   description:
-    "Provably fair Solana originals. Mines, limbo, crash, keno, and more.",
+    "Klasshi is an online casino for adults (18+): deposit USDC/USDT on Solana, play provably fair originals (mines, limbo, crash, dice, and more), and withdraw. Google Sign-In is used only to create and secure your account—not for image generation or AI NCII.",
 };
 
 export const viewport: Viewport = {
