@@ -717,9 +717,20 @@ a.btn {
 .home-purpose {
   max-width: 720px;
   margin: 0 auto;
-  padding: 2.25rem 1.25rem 3rem;
+  padding: 1.75rem 1.25rem 1.5rem;
   display: grid;
-  gap: 0.85rem;
+  gap: 0.75rem;
+}
+
+.home-purpose--page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.25rem 2rem;
+}
+
+.home-purpose--links {
+  text-align: center;
+  padding-bottom: 2.5rem;
 }
 
 .home-purpose h2 {
@@ -728,6 +739,14 @@ a.btn {
   font-size: 1.15rem;
   letter-spacing: 0.04em;
   font-weight: 650;
+  color: var(--ink);
+}
+
+.home-purpose h3 {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--ink);
 }
 
 .home-purpose p {

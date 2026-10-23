@@ -80,6 +80,7 @@ const SECTIONS: LegalSection[] = [
       "If you choose “Continue with Google”, Google authenticates you and may share with us basic profile information such as your name and email address, as permitted by your Google settings and Google’s policies.",
       "Your use of Google is also subject to Google’s Privacy Policy. We use that information only to create or link your Klasshi account and operate the Platform.",
       "Klasshi’s use of Google APIs is limited to authentication and account access. We do not use Google APIs to create, generate, edit, distribute, or facilitate AI-generated non-consensual intimate imagery (AI NCII), deepnudes, or similar abusive content. The Platform does not provide image-generation features of that kind.",
+      "A plain-language summary of our application purpose and Google API use is always published at https://klasshi.com/about and on the home page at https://klasshi.com.",
     ],
   },
   {

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useSkate } from "@/hooks/useSkate";
 import { useAuthModal } from "@/components/AuthModal";
 import { BetHistory } from "@/components/BetHistory";
+import { AppPurpose } from "@/components/AppPurpose";
 import { GAME_CATALOG } from "@/lib/catalog";
 
 export default function HomePage() {
@@ -14,6 +15,9 @@ export default function HomePage() {
 
   return (
     <main>
+      {/* Purpose first in the document for Google branding review crawlers */}
+      <AppPurpose />
+
       {!user ? (
         <section className="hero hero--visual">
           <div className="hero-media" aria-hidden>
@@ -42,7 +46,8 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.12, duration: 0.5 }}
             >
-              Provably fair Solana originals. Deposit, play, withdraw.
+              Adult Solana casino — deposit USDC, play originals, withdraw.
+              Google Sign-In is for accounts only (not AI imagery).
             </motion.p>
             <motion.div
               className="hero-cta"
@@ -68,36 +73,7 @@ export default function HomePage() {
             </motion.div>
           </div>
         </section>
-      ) : null}
-
-      {!user ? (
-        <section className="home-purpose" aria-labelledby="home-purpose-title">
-          <h2 id="home-purpose-title">What Klasshi is</h2>
-          <p>
-            Klasshi is an online casino for adults (18+) at{" "}
-            <strong>klasshi.com</strong>. Our purpose is to let players deposit
-            USDC or USDT on Solana, play provably fair original games (including
-            mines, limbo, crash, dice, keno, roulette, and similar titles), track
-            balances in a custodial cashier, and withdraw to a Solana wallet.
-          </p>
-          <p>
-            Google Sign-In is offered only so you can create and access a Klasshi
-            account with your Google email and basic profile. We use Google
-            authentication APIs solely for sign-in and account linking. Klasshi
-            does not use Google APIs to generate, edit, distribute, or facilitate
-            AI-generated non-consensual intimate imagery (AI NCII), deepfakes, or
-            any similar content.
-          </p>
-          <p>
-            Gambling involves risk. You must be of legal age in your jurisdiction.
-            See our{" "}
-            <Link href="/terms">Terms</Link> and{" "}
-            <Link href="/privacy">Privacy Policy</Link>.
-          </p>
-        </section>
-      ) : null}
-
-      {user ? (
+      ) : (
         <section className="lobby">
           <div className="lobby-head">
             <div className="section-head">
@@ -154,7 +130,7 @@ export default function HomePage() {
             </p>
           </details>
         </section>
-      ) : null}
+      )}
     </main>
   );
 }
