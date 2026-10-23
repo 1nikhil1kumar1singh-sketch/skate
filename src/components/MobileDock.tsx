@@ -58,7 +58,7 @@ export function MobileDock() {
               : undefined
           }
         >
-          Wallet
+          Profile
         </Link>
       )}
     </nav>

@@ -208,7 +208,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <main className="vault-page">
-        <div className="vault-skeleton">Loading wallet…</div>
+        <div className="vault-skeleton">Loading profile…</div>
       </main>
     );
   }
@@ -231,7 +231,7 @@ export default function ProfilePage() {
             {initial}
           </div>
           <div className="vault-hero__copy">
-            <p className="vault-kicker">Cashier</p>
+            <p className="vault-kicker">Profile</p>
             <h1>{user.displayName ?? "Player"}</h1>
             <p className="vault-meta">
               <span
@@ -259,18 +259,22 @@ export default function ProfilePage() {
         </div>
 
         <div className="vault-hero__balance">
-          <span className="vault-balance-label">Available balance</span>
-          <p className="vault-balance-value">
-            {user.balance.availableDisplay}
-          </p>
-          {user.balance.hasBonus ? (
-            <span className="vault-bonus-line">
-              Bonus {user.balance.bonusDisplay}
-            </span>
-          ) : null}
-          <span className="muted vault-locked">
-            Locked ${fromMicroUsdc(user.balance.locked).toFixed(2)}
-          </span>
+          <div className="vault-balance-block">
+            <span className="vault-balance-label">Available</span>
+            <p className="vault-balance-value">
+              {user.balance.availableDisplay}
+            </p>
+            <div className="vault-balance-sub">
+              {user.balance.hasBonus ? (
+                <span className="vault-bonus-line">
+                  Bonus {user.balance.bonusDisplay}
+                </span>
+              ) : null}
+              <span className="muted vault-locked">
+                Locked ${fromMicroUsdc(user.balance.locked).toFixed(2)}
+              </span>
+            </div>
+          </div>
           <div className="vault-hero__actions">
             <button
               type="button"
@@ -309,7 +313,7 @@ export default function ProfilePage() {
       ) : null}
 
       <div className="vault-shell">
-        <nav className="vault-nav" aria-label="Wallet sections">
+        <nav className="vault-nav" aria-label="Profile sections">
           {(
             [
               ["cashier", "Cashier"],

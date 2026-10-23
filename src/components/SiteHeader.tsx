@@ -13,10 +13,33 @@ const NAV = [
   { href: "/support", label: "Support", highlight: false },
 ] as const;
 
+function ProfileIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.75" />
+      <path
+        d="M5.5 19.5c1.6-3.2 4-4.8 6.5-4.8s4.9 1.6 6.5 4.8"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function SiteHeader() {
   const { user, loading } = useSkate();
   const { openAuth } = useAuthModal();
   const pathname = usePathname();
+  const profileActive =
+    pathname.startsWith("/profile") || pathname.startsWith("/wallet");
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -50,7 +73,7 @@ export function SiteHeader() {
           {loading ? (
             <span className="muted">…</span>
           ) : user && !user.isGuest ? (
-            <>
+            <div className="header-user">
               <Link
                 href="/profile"
                 className="balance-pill"
@@ -66,11 +89,13 @@ export function SiteHeader() {
               </Link>
               <Link
                 href="/profile"
-                className="btn btn--primary btn--compact header-wallet-btn"
+                className={`header-profile${profileActive ? " is-active" : ""}`}
+                title="Profile"
+                aria-label="Open profile"
               >
-                Wallet
+                <ProfileIcon className="header-profile__icon" />
               </Link>
-            </>
+            </div>
           ) : (
             <button
               type="button"

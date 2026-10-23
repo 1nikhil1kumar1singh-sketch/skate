@@ -365,29 +365,75 @@ a.btn {
   min-width: 0;
 }
 
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
 .balance-pill {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.45rem;
-  padding: 0.45rem 0.8rem;
-  border: 1px solid rgba(0, 240, 255, 0.28);
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(255, 43, 214, 0.06));
-  box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.06), var(--glow-cyan);
-  border-radius: 2px;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
+  border-radius: 999px;
+  max-width: 100%;
+}
+
+.balance-pill:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .balance-pill__label {
-  color: var(--neon);
+  color: var(--muted);
   font-size: 0.68rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
+.balance-pill strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
 .balance-pill__bonus {
-  font-size: 0.65rem;
-  color: var(--acid);
-  letter-spacing: 0.04em;
-  margin-left: 0.15rem;
+  font-size: 0.68rem;
+  color: rgba(180, 210, 160, 0.95);
+  letter-spacing: 0.02em;
+  margin-left: 0.1rem;
+}
+
+.header-profile {
+  width: 2.45rem;
+  height: 2.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  place-items: center;
+  color: rgba(232, 241, 255, 0.92);
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.header-profile:hover,
+.header-profile.is-active {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--ink);
+}
+
+.header-profile__icon {
+  display: block;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .amount-field {
@@ -2152,11 +2198,12 @@ a.btn {
 
 .vault-hero {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 1.25rem;
-  padding: 1.4rem 1.5rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.35rem 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  border-radius: 12px;
   background: linear-gradient(165deg, rgba(14, 18, 28, 0.98), rgba(8, 10, 16, 0.98));
 }
 
@@ -2185,17 +2232,17 @@ a.btn {
 }
 
 .vault-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
   display: grid;
   place-items: center;
   font-family: var(--font-display), sans-serif;
   font-weight: 650;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   color: rgba(232, 241, 255, 0.92);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
 }
 
@@ -2224,10 +2271,16 @@ a.btn {
 
 .vault-hero__balance {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.85rem;
   align-content: center;
   justify-items: end;
   text-align: right;
+}
+
+.vault-balance-block {
+  display: grid;
+  gap: 0.2rem;
+  justify-items: end;
 }
 
 .vault-balance-label {
@@ -2240,19 +2293,24 @@ a.btn {
 .vault-balance-value {
   margin: 0;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(1.7rem, 4vw, 2.15rem);
+  font-size: clamp(1.55rem, 3.5vw, 2rem);
   letter-spacing: 0.02em;
   color: var(--ink);
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-  justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
 }
 
 .vault-balance-value span {
   font-size: 0.75rem;
-  color: var(--neon);
-  letter-spacing: 0.12em;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.vault-balance-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .vault-locked {
@@ -2260,15 +2318,21 @@ a.btn {
 }
 
 .vault-bonus-line {
-  font-size: 0.85rem;
-  color: var(--acid);
-  letter-spacing: 0.04em;
+  font-size: 0.82rem;
+  color: rgba(180, 210, 160, 0.95);
+  letter-spacing: 0.02em;
 }
 
 .vault-hero__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.65rem;
+  margin-top: 0;
+  justify-content: flex-end;
+}
+
+.vault-hero__actions .btn {
+  min-width: 7.5rem;
 }
 
 .vault-toast {
@@ -2930,13 +2994,22 @@ a.btn {
     border-color: var(--neon);
   }
 
-  .header-wallet-btn {
-    display: none;
+  .header-user {
+    gap: 0.4rem;
+  }
+
+  .header-profile {
+    width: 2.3rem;
+    height: 2.3rem;
   }
 
   .balance-pill {
-    padding: 0.4rem 0.65rem;
-    max-width: 46vw;
+    padding: 0.4rem 0.7rem;
+    max-width: 48vw;
+  }
+
+  .balance-pill__label {
+    display: none;
   }
 
   .balance-pill strong {
@@ -3183,17 +3256,28 @@ a.btn {
 
   .vault-hero {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.1rem;
+    padding: 1.15rem 1.1rem;
   }
 
   .vault-hero__balance {
-    justify-items: start;
+    justify-items: stretch;
     text-align: left;
+    gap: 0.95rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .vault-balance-block {
+    justify-items: start;
+  }
+
+  .vault-balance-sub {
+    justify-content: flex-start;
   }
 
   .vault-balance-value {
-    justify-content: flex-start;
-    font-size: 1.6rem;
+    font-size: 1.55rem;
   }
 
   .vault-shell {

@@ -11,7 +11,7 @@ const ORIGINALS = [
 
 const ACCOUNT = [
   { href: "/", label: "Lobby" },
-  { href: "/profile", label: "Wallet" },
+  { href: "/profile", label: "Profile" },
   { href: "/profile", label: "Cashier" },
 ] as const;
 

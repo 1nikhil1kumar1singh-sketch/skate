@@ -2,6 +2,7 @@ import {
   Connection,
   Keypair,
   PublicKey,
+  SendTransactionError,
   Transaction,
 } from "@solana/web3.js";
 import {
@@ -56,6 +57,48 @@ export function isLiveWalletReady() {
     Boolean(config.solana.treasuryAddress) &&
     Boolean(getTreasuryKeypair())
   );
+}
+
+/** ~0.02 SOL covers ATA rents + a few sweeps/withdrawals. */
+const MIN_TREASURY_FEE_LAMPORTS = 20_000_000n;
+
+async function assertTreasuryCanPayFees(connection: Connection, payer: Keypair) {
+  const balance = await connection.getBalance(payer.publicKey);
+  if (BigInt(balance) < MIN_TREASURY_FEE_LAMPORTS) {
+    throw new Error(
+      `Treasury needs SOL for fees. Send at least 0.05 SOL to ${payer.publicKey.toBase58()} (current: ${(balance / 1e9).toFixed(4)} SOL).`,
+    );
+  }
+}
+
+async function sendAndConfirm(
+  connection: Connection,
+  tx: Transaction,
+  signers: Keypair[],
+) {
+  try {
+    const signature = await connection.sendTransaction(tx, signers, {
+      skipPreflight: false,
+    });
+    await connection.confirmTransaction(signature, "confirmed");
+    return signature;
+  } catch (err) {
+    if (err instanceof SendTransactionError) {
+      let logs = "";
+      try {
+        logs = (await err.getLogs(connection)).join("\n");
+      } catch {
+        /* ignore */
+      }
+      const hint =
+        /no record of a prior credit/i.test(err.message) ||
+        /no record of a prior credit/i.test(logs)
+          ? " Treasury has no SOL (or the account was never funded). Fund the treasury with SOL first."
+          : "";
+      throw new Error(`${err.message}${hint}${logs ? `\nLogs:\n${logs}` : ""}`);
+    }
+    throw err;
+  }
 }
 
 export async function getTokenBalance(
@@ -214,6 +257,8 @@ export async function sweepTokenToTreasury(
 
   const deposit = parseKeypair(depositSecretBs58);
   const connection = getConnection();
+  await assertTreasuryCanPayFees(connection, treasury);
+
   const mint = new PublicKey(mintAddress);
   const fromAta = getAssociatedTokenAddressSync(mint, deposit.publicKey);
   const toAta = getAssociatedTokenAddressSync(mint, treasury.publicKey);
@@ -242,11 +287,7 @@ export async function sweepTokenToTreasury(
     ),
   );
 
-  const signature = await connection.sendTransaction(tx, [treasury, deposit], {
-    skipPreflight: false,
-  });
-  await connection.confirmTransaction(signature, "confirmed");
-  return signature;
+  return sendAndConfirm(connection, tx, [treasury, deposit]);
 }
 
 export async function sweepUsdcToTreasury(
@@ -321,12 +362,21 @@ export async function sendStableWithdrawal(
   }
 
   const connection = getConnection();
+  await assertTreasuryCanPayFees(connection, payer);
+
   const mint = mintForSymbol(symbol);
   const destination = new PublicKey(toAddress);
   const fromAta = getAssociatedTokenAddressSync(mint, payer.publicKey);
   const toAta = getAssociatedTokenAddressSync(mint, destination);
 
-  const fromAccount = await getAccount(connection, fromAta);
+  let fromAccount;
+  try {
+    fromAccount = await getAccount(connection, fromAta);
+  } catch {
+    throw new Error(
+      `Treasury has no ${symbol} token account yet. Deposit/sweep USDC into ${payer.publicKey.toBase58()} first (or send ${symbol} directly to that wallet).`,
+    );
+  }
   if (fromAccount.amount < amount) {
     throw new Error(`Treasury has insufficient ${symbol}`);
   }
@@ -348,11 +398,7 @@ export async function sendStableWithdrawal(
     ),
   );
 
-  const signature = await connection.sendTransaction(tx, [payer], {
-    skipPreflight: false,
-  });
-  await connection.confirmTransaction(signature, "confirmed");
-  return signature;
+  return sendAndConfirm(connection, tx, [payer]);
 }
 
 /** @deprecated use sendStableWithdrawal */

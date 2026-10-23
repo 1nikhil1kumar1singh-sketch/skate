@@ -118,45 +118,22 @@ export async function POST() {
       sweepSignatures.push(sweepSignature);
       swept += leftover;
 
-      if (credited === BigInt(0)) {
-        const already = await prisma.deposit.findUnique({
-          where: { signature: sweepSignature },
+      // Sweep is treasury ops only — never credit the ledger here.
+      // Credits come only from inbound transfer detection above. Crediting
+      // leftovers on a later sync (after a prior credit + failed sweep)
+      // double-paid the same USDC.
+      await prisma.deposit
+        .create({
+          data: {
+            userId: user.id,
+            amount: BigInt(0),
+            signature: `sweep:${stable.symbol}:${sweepSignature}`,
+            status: `swept:${stable.symbol}`,
+          },
+        })
+        .catch(() => {
+          /* ignore unique collisions */
         });
-        if (!already) {
-          await prisma.$transaction(async (txdb) => {
-            await txdb.deposit.create({
-              data: {
-                userId: user.id,
-                amount: leftover,
-                signature: sweepSignature,
-                status: `swept:${stable.symbol}`,
-              },
-            });
-            await txdb.balance.update({
-              where: { userId: user.id },
-              data: { available: { increment: leftover } },
-            });
-            await grantFirstDepositBonus(txdb, user.id, leftover);
-          });
-          credited += leftover;
-          if (!creditedSymbols.includes(stable.symbol)) {
-            creditedSymbols.push(stable.symbol);
-          }
-        }
-      } else {
-        await prisma.deposit
-          .create({
-            data: {
-              userId: user.id,
-              amount: BigInt(0),
-              signature: `sweep:${stable.symbol}:${sweepSignature}`,
-              status: `swept:${stable.symbol}`,
-            },
-          })
-          .catch(() => {
-            /* ignore unique collisions */
-          });
-      }
     }
 
     const balance = await prisma.balance.findUniqueOrThrow({

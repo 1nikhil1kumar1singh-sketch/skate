@@ -6,7 +6,7 @@ import Link from "next/link";
 const FAQ = [
   {
     q: "How do I deposit?",
-    a: "Sign in, open Wallet → Deposit, copy your Solana address, send USDC or USDT, then Sync deposits.",
+    a: "Sign in, open Profile → Deposit, copy your Solana address, send USDC or USDT, then Sync deposits.",
   },
   {
     q: "How long do withdrawals take?",
