@@ -468,31 +468,6 @@ export default function ProfilePage() {
                     </div>
                   </label>
 
-                  {user.depositUrl ? (
-                    <label className="field">
-                      <span>Pay link</span>
-                      <div className="vault-address-field">
-                        <input
-                          readOnly
-                          value={user.depositUrl}
-                          spellCheck={false}
-                        />
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={() =>
-                            void copy(
-                              "link",
-                              `${window.location.origin}${user.depositUrl}`,
-                            )
-                          }
-                        >
-                          {copiedKey === "link" ? "Copied" : "Copy"}
-                        </button>
-                      </div>
-                    </label>
-                  ) : null}
-
                   {liveWallet ? (
                     <>
                       <p className="muted vault-deposit-hint">
