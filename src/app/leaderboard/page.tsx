@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   formatRefreshCountdown,
@@ -38,13 +39,26 @@ export default function LeaderboardPage() {
 
   return (
     <main className="promo-page">
-      <section className="promo-hero">
-        <p className="promo-kicker">Season</p>
-        <h1>Leaderboard</h1>
-        <p className="promo-lead">
-          Top {WINNER_SLOTS} share{" "}
-          <strong>{money(PRIZE_POOL_USD)}</strong>.
-        </p>
+      <section className="promo-hero promo-hero--visual">
+        <div className="promo-hero__media" aria-hidden>
+          <Image
+            src="/games/limbo.jpg"
+            alt=""
+            fill
+            priority
+            className="promo-hero__img"
+            sizes="100vw"
+          />
+          <div className="promo-hero__veil" />
+        </div>
+        <div className="promo-hero__copy">
+          <p className="promo-kicker">Trading league</p>
+          <h1>Leaderboard</h1>
+          <p className="promo-lead">
+            ${PRIZE_POOL_USD.toLocaleString()} season pool · top {WINNER_SLOTS}{" "}
+            share the prizes.
+          </p>
+        </div>
 
         <div className="season-timer" aria-label="Season countdown">
           <div className="season-timer__clock">

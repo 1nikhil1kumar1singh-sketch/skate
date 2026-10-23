@@ -1,6 +1,6 @@
-/** Season prize pool: $50,000 across 500 winners. */
+/** Season prize pool: $10,000 across 500 winners. */
 
-export const PRIZE_POOL_USD = 50_000;
+export const PRIZE_POOL_USD = 10_000;
 export const WINNER_SLOTS = 500;
 
 /** Fixed 60-day race; display clock shows day 10 of 60. */
@@ -9,6 +9,9 @@ export const SEASON_DAYS_PASSED = 10;
 
 /** Board standings reshuffle once per UTC calendar day. */
 export const LEADERBOARD_REFRESH_HOURS = 24;
+
+/** Cap displayed wager volume so toppers stay under $1k. */
+export const MAX_WAGERED_USD = 999;
 
 export function seasonProgress() {
   const remaining = Math.max(0, SEASON_DAYS - SEASON_DAYS_PASSED);
@@ -28,17 +31,17 @@ export type PrizeTier = {
   label: string;
 };
 
-/** Tiered split — heavier at the top, still pays all 500. */
+/** Tiered split for a $10k pool — heavier at the top, still pays all 500. */
 export const PRIZE_TIERS: PrizeTier[] = [
-  { from: 1, to: 1, prizeUsd: 5_500, label: "1st" },
-  { from: 2, to: 3, prizeUsd: 2_500, label: "2nd – 3rd" },
-  { from: 4, to: 10, prizeUsd: 1_000, label: "4th – 10th" },
-  { from: 11, to: 25, prizeUsd: 500, label: "11th – 25th" },
-  { from: 26, to: 50, prizeUsd: 250, label: "26th – 50th" },
-  { from: 51, to: 100, prizeUsd: 125, label: "51st – 100th" },
-  { from: 101, to: 200, prizeUsd: 50, label: "101st – 200th" },
-  { from: 201, to: 350, prizeUsd: 25, label: "201st – 350th" },
-  { from: 351, to: 500, prizeUsd: 25, label: "351st – 500th" },
+  { from: 1, to: 1, prizeUsd: 1_100, label: "1st" },
+  { from: 2, to: 3, prizeUsd: 500, label: "2nd – 3rd" },
+  { from: 4, to: 10, prizeUsd: 200, label: "4th – 10th" },
+  { from: 11, to: 25, prizeUsd: 100, label: "11th – 25th" },
+  { from: 26, to: 50, prizeUsd: 50, label: "26th – 50th" },
+  { from: 51, to: 100, prizeUsd: 25, label: "51st – 100th" },
+  { from: 101, to: 200, prizeUsd: 10, label: "101st – 200th" },
+  { from: 201, to: 350, prizeUsd: 5, label: "201st – 350th" },
+  { from: 351, to: 500, prizeUsd: 5, label: "351st – 500th" },
 ];
 
 export function prizeForRank(rank: number): number {
@@ -176,8 +179,8 @@ function shuffleInPlace<T>(arr: T[], rand: () => number) {
 }
 
 /**
- * Demo board of 50 players. Order + wager totals refresh once per UTC day
- * so the page stays stable within a day and reshuffles at midnight UTC.
+ * Demo board of 50 players. Wager volumes stay under $1k so the board
+ * looks like an early / mid-season league, not a whale table.
  */
 export function getDemoLeaderboard(now = new Date()): LeaderRow[] {
   const dayKey = leaderboardDayKey(now);
@@ -186,9 +189,11 @@ export function getDemoLeaderboard(now = new Date()): LeaderRow[] {
 
   return names.map((name, i) => {
     const rank = i + 1;
-    const jitter = 0.92 + rand() * 0.16;
-    const wagered = Math.round(
-      (420_000 / rank) * (1.08 - (i % 7) * 0.01) * jitter,
+    const jitter = 0.94 + rand() * 0.12;
+    const raw = (910 / Math.pow(rank, 0.55)) * (1.04 - (i % 6) * 0.012) * jitter;
+    const wagered = Math.min(
+      MAX_WAGERED_USD,
+      Math.max(12, Math.round(raw)),
     );
     return {
       rank,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useSkate } from "@/hooks/useSkate";
 import { useAuthModal } from "@/components/AuthModal";
 import {
@@ -104,12 +105,25 @@ export default function ReferralPage() {
 
   return (
     <main className="promo-page">
-      <section className="promo-hero">
-        <p className="promo-kicker">Invite</p>
-        <h1>Referral</h1>
-        <p className="promo-lead">
-          Earn ${REFERRAL_REWARD_USD} when a friend plays.
-        </p>
+      <section className="promo-hero promo-hero--visual">
+        <div className="promo-hero__media" aria-hidden>
+          <Image
+            src="/games/coinflip.jpg"
+            alt=""
+            fill
+            priority
+            className="promo-hero__img"
+            sizes="100vw"
+          />
+          <div className="promo-hero__veil" />
+        </div>
+        <div className="promo-hero__copy">
+          <p className="promo-kicker">Invite</p>
+          <h1>Referral</h1>
+          <p className="promo-lead">
+            Earn ${REFERRAL_REWARD_USD} when a friend plays.
+          </p>
+        </div>
       </section>
 
       <section className="promo-card">

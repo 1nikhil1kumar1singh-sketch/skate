@@ -3722,6 +3722,70 @@ a.btn {
   padding: 1.35rem 0 0.35rem;
 }
 
+.promo-hero--visual {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  padding: 1.5rem 1.25rem 1.35rem;
+  margin-bottom: 0.5rem;
+  min-height: 11rem;
+  display: grid;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.promo-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.promo-hero__img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.promo-hero__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, rgba(5, 6, 10, 0.94) 0%, rgba(5, 6, 10, 0.72) 48%, rgba(5, 6, 10, 0.5) 100%),
+    linear-gradient(0deg, rgba(5, 6, 10, 0.88) 0%, transparent 55%);
+}
+
+.promo-hero__copy,
+.promo-hero--visual .season-timer,
+.promo-hero--visual .promo-stats {
+  position: relative;
+  z-index: 1;
+}
+
+.promo-hero--visual .promo-kicker {
+  color: rgba(232, 241, 255, 0.7);
+}
+
+.promo-hero--visual .promo-lead {
+  color: rgba(200, 210, 230, 0.88);
+}
+
+.offer-card__media {
+  position: relative;
+  width: calc(100% + 2.7rem);
+  margin: 0 -1.35rem 0.15rem;
+  height: 9.5rem;
+  overflow: hidden;
+}
+
+.offer-card__img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.offer-card__top {
+  padding-top: 0.15rem;
+}
+
 .promo-kicker {
   margin: 0 0 0.45rem;
   font-size: 0.7rem;
@@ -4401,11 +4465,12 @@ a.btn {
   display: grid;
   gap: 1rem;
   align-content: start;
-  padding: 1.4rem 1.35rem 1.35rem;
+  padding: 0 1.35rem 1.35rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(10, 14, 24, 0.95);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
 }
 
 .offer-card__top {

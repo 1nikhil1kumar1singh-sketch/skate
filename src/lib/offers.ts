@@ -15,6 +15,7 @@ export type OfferCard = {
   finePrint?: string;
   ctaLabel: string;
   ctaHref: string;
+  image: string;
 };
 
 export const FIRST_DEPOSIT_OFFER: OfferCard = {
@@ -31,6 +32,7 @@ export const FIRST_DEPOSIT_OFFER: OfferCard = {
   ],
   ctaLabel: "Deposit now",
   ctaHref: "/profile",
+  image: "/games/mines.jpg",
 };
 
 export const REFERRAL_OFFER: OfferCard = {
@@ -46,6 +48,7 @@ export const REFERRAL_OFFER: OfferCard = {
   finePrint: `Credit unlocks ${REFERRAL_UNLOCK_DAYS} days after it is earned.`,
   ctaLabel: "Open referral",
   ctaHref: "/referral",
+  image: "/games/dice.jpg",
 };
 
 export const SITE_OFFERS: OfferCard[] = [FIRST_DEPOSIT_OFFER, REFERRAL_OFFER];

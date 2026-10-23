@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SITE_OFFERS } from "@/lib/offers";
 
@@ -9,17 +10,39 @@ export const metadata = {
 export default function OffersPage() {
   return (
     <main className="promo-page offers-page">
-      <section className="promo-hero">
-        <p className="promo-kicker">Promotions</p>
-        <h1>Offers</h1>
-        <p className="promo-lead">
-          Active bonuses for new deposits and inviting friends.
-        </p>
+      <section className="promo-hero promo-hero--visual">
+        <div className="promo-hero__media" aria-hidden>
+          <Image
+            src="/games/crash.jpg"
+            alt=""
+            fill
+            priority
+            className="promo-hero__img"
+            sizes="100vw"
+          />
+          <div className="promo-hero__veil" />
+        </div>
+        <div className="promo-hero__copy">
+          <p className="promo-kicker">Promotions</p>
+          <h1>Offers</h1>
+          <p className="promo-lead">
+            Active bonuses for new deposits and inviting friends.
+          </p>
+        </div>
       </section>
 
       <div className="offers-grid">
         {SITE_OFFERS.map((offer) => (
           <article key={offer.id} className="offer-card">
+            <div className="offer-card__media">
+              <Image
+                src={offer.image}
+                alt=""
+                fill
+                className="offer-card__img"
+                sizes="(max-width: 820px) 100vw, 420px"
+              />
+            </div>
             <header className="offer-card__top">
               <div>
                 <p className="offer-card__eyebrow">{offer.eyebrow}</p>
