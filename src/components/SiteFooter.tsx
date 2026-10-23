@@ -27,12 +27,7 @@ export function SiteFooter() {
               <span className="brand-mark__slash">/</span>
               KLASSHI
             </Link>
-            <p>
-              Online casino for adults (18+): Solana USDC/USDT deposits, provably
-              fair originals, and withdrawals. Google Sign-In is for account
-              access only—we do not use Google APIs for AI NCII or image
-              generation.
-            </p>
+            <p>Provably fair Solana originals. Deposit, play, withdraw.</p>
           </div>
 
           <div className="site-footer__col">

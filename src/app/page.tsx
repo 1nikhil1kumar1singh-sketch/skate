@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useSkate } from "@/hooks/useSkate";
 import { useAuthModal } from "@/components/AuthModal";
 import { BetHistory } from "@/components/BetHistory";
-import { AppPurpose } from "@/components/AppPurpose";
 import { GAME_CATALOG } from "@/lib/catalog";
 
 export default function HomePage() {
@@ -15,9 +14,6 @@ export default function HomePage() {
 
   return (
     <main>
-      {/* Purpose first in the document for Google branding review crawlers */}
-      <AppPurpose />
-
       {!user ? (
         <section className="hero hero--visual">
           <div className="hero-media" aria-hidden>
@@ -46,8 +42,7 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.12, duration: 0.5 }}
             >
-              Adult Solana casino — deposit USDC, play originals, withdraw.
-              Google Sign-In is for accounts only (not AI imagery).
+              Provably fair Solana originals. Deposit, play, withdraw.
             </motion.p>
             <motion.div
               className="hero-cta"
