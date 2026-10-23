@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSkate } from "@/hooks/useSkate";
@@ -73,6 +73,7 @@ export default function ProfilePage() {
   const [activityPage, setActivityPage] = useState(1);
   const [activityTotal, setActivityTotal] = useState(0);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const syncInFlight = useRef(false);
 
   const stables = (solana?.acceptedStables ?? ["USDC"]) as ("USDC" | "USDT")[];
   const withdrawAssets = useMemo(() => {
@@ -164,33 +165,77 @@ export default function ProfilePage() {
     }
   }
 
-  async function onSyncDeposit() {
-    setBusy("sync");
-    try {
-      const data = await syncDeposits();
-      const credited = (Number(data.credited ?? 0) / 1e6).toFixed(2);
-      const symbols =
-        data.creditedSymbols?.length
+  const runDepositSync = useCallback(
+    async (opts?: { silent?: boolean; manual?: boolean }) => {
+      if (syncInFlight.current) return null;
+      syncInFlight.current = true;
+      const silent = Boolean(opts?.silent);
+      if (!silent) setBusy("sync");
+      try {
+        const data = await syncDeposits();
+        const creditedMicro = Number(data.credited ?? 0);
+        const sweptMicro = Number(data.swept ?? 0);
+        const credited = (creditedMicro / 1e6).toFixed(2);
+        const swept = (sweptMicro / 1e6).toFixed(2);
+        const symbols = data.creditedSymbols?.length
           ? data.creditedSymbols.join("/")
           : "USD";
-      const sweepNote =
-        data.sweepErrors?.length
-          ? ` · sweep issue: ${data.sweepErrors[0]}`
-          : "";
-      flash(
-        "ok",
-        Number(data.credited ?? 0) > 0
-          ? `Synced · +${credited} ${symbols} credited${sweepNote}`
-          : `Synced · no new deposits${sweepNote}`,
-      );
-      await refresh();
-      await loadHistory(1);
-    } catch (e) {
-      flash("err", e instanceof Error ? e.message : "Sync failed");
-    } finally {
-      setBusy(null);
-    }
+        const sweepErr = data.sweepErrors?.[0];
+
+        if (creditedMicro > 0 || sweptMicro > 0 || opts?.manual || sweepErr) {
+          const parts: string[] = [];
+          if (creditedMicro > 0) {
+            parts.push(`+${credited} ${symbols} credited`);
+          } else if (opts?.manual) {
+            parts.push("no new deposits");
+          }
+          if (sweptMicro > 0) {
+            parts.push(`${swept} swept to treasury`);
+          }
+          if (sweepErr) parts.push(`sweep issue: ${sweepErr}`);
+          flash("ok", `Synced · ${parts.join(" · ")}`);
+        }
+
+        if (creditedMicro > 0 || sweptMicro > 0 || opts?.manual) {
+          await refresh();
+          await loadHistory(1);
+        }
+        return data;
+      } catch (e) {
+        if (!silent || opts?.manual) {
+          flash("err", e instanceof Error ? e.message : "Sync failed");
+        }
+        return null;
+      } finally {
+        syncInFlight.current = false;
+        if (!silent) setBusy(null);
+      }
+    },
+    [syncDeposits, refresh, loadHistory],
+  );
+
+  async function onSyncDeposit() {
+    await runDepositSync({ manual: true });
   }
+
+  // Live deposits: credit + sweep to treasury automatically while cashier is open
+  useEffect(() => {
+    if (!user || !liveWallet) return;
+    if (panel !== "cashier" || cashTab !== "deposit") return;
+
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      void runDepositSync({ silent: true });
+    };
+
+    tick();
+    const id = window.setInterval(tick, 12_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [user?.id, liveWallet, panel, cashTab, runDepositSync]);
 
   async function onWithdraw() {
     if (!withdrawTo.trim()) {
@@ -449,14 +494,21 @@ export default function ProfilePage() {
                   ) : null}
 
                   {liveWallet ? (
-                    <button
-                      type="button"
-                      className="btn btn--primary btn--block"
-                      disabled={busy === "sync"}
-                      onClick={() => void onSyncDeposit()}
-                    >
-                      {busy === "sync" ? "Syncing…" : "Sync deposits"}
-                    </button>
+                    <>
+                      <p className="muted vault-deposit-hint">
+                        Send {stables.join(" or ")} to your address. Deposits are
+                        credited and swept to the treasury automatically while
+                        this page is open — or tap Sync now.
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn--primary btn--block"
+                        disabled={busy === "sync"}
+                        onClick={() => void onSyncDeposit()}
+                      >
+                        {busy === "sync" ? "Syncing…" : "Sync deposits"}
+                      </button>
+                    </>
                   ) : (
                     <>
                       <label className="field">
